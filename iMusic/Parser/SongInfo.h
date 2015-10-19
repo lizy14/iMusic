@@ -12,7 +12,7 @@
 #include "String.h"
 
 namespace N{
-	class Song{
+	class SongInfo{
 	public:
 		//文本字段
 		String title;   //音乐名称
@@ -23,4 +23,5 @@ namespace N{
 		String lyricist;//作曲
 		String lyric;   //歌词
 	};
+
 }

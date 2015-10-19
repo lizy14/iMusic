@@ -16,7 +16,9 @@
 namespace N{
 	class Parser{
 	public:
-		Parser();
+		SongInfo songInfo;
+	public:
+		Parser(String);
 		~Parser();
 	};
 }

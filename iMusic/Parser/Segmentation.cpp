@@ -11,13 +11,16 @@
 #include "Segmentation.h"
 
 
-Segmentation::Segmentation(void){
+N::Segmentation::Segmentation(void){
 }
 
-Segmentation::~Segmentation(void){
+N::Segmentation::~Segmentation(void){
 }
 
-StringList Segmentation::exec(String){
-	StringList list;
-	return list;
+StringList& N::Segmentation::exec(String){
+	StringList *list = new StringList();
+	list->push(String("THIS_IS_WORD_A"));
+	list->push(String("THIS_IS_WORD_B"));
+	list->push(String("THIS_IS_WORD_C"));
+	return *list;
 }

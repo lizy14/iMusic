@@ -10,7 +10,11 @@
 
 #include "Parser.h"
 
-N::Parser::Parser(){
+N::Parser::Parser(String str){
+	int prefix = str.indexOf(String("<div class=\"song_info_area\">"));
+	int suffix = str.indexOf(String("<div class=\"music_list_area\">"));
+	str = str.subString(prefix, suffix);
+	songInfo.lyric=str;
 	return;
 }
 

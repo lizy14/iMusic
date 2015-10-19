@@ -68,6 +68,7 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Segmentation.cpp" />
     <ClCompile Include="String.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="List.h" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Stack.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="StringList.h" />
+    <ClInclude Include="Test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

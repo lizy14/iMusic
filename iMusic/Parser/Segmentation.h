@@ -14,10 +14,11 @@
 using N::String;
 using N::StringList;
 
-class Segmentation{
-public:
-	Segmentation(void);
-	~Segmentation(void);
-	static StringList exec(String);
-};
-
+namespace N{
+	class Segmentation{
+	public:
+		Segmentation(void);
+		~Segmentation(void);
+		static StringList& exec(String);
+	};
+}
