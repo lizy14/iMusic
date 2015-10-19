@@ -53,7 +53,7 @@ namespace N{
 			return (head==nullptr);
 		}
 		T operator[](int index){
-			//保存上一次下标查询的结果
+			//TODO: 保存上一次下标查询的结果
 			//这样一来，使用下标遍历链表只需线性时间
 			int i=0;
 			Item<T> *p=head;
