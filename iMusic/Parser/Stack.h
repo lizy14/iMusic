@@ -10,7 +10,7 @@
 
 #pragma once
 #include "List.h"
-namespace N{
+namespace Zhaoyang{
 	template<class T>
 	class Stack : public List<T>{
 	public:

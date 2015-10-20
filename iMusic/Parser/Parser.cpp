@@ -10,14 +10,14 @@
 
 #include "Parser.h"
 
-N::Parser::Parser(String str){
-	int prefix = str.indexOf(String("<div class=\"song_info_area\">"));
-	int suffix = str.indexOf(String("<div class=\"music_list_area\">"));
+Zhaoyang::Parser::Parser(CharString str){
+	int prefix = str.indexOf(CharString("<div class=\"song_info_area\">"));
+	int suffix = str.indexOf(CharString("<div class=\"music_list_area\">"));
 	str = str.subString(prefix, suffix);
 	songInfo.lyric=str;
 	return;
 }
 
-N::Parser::~Parser(){
+Zhaoyang::Parser::~Parser(){
 	return;
 }

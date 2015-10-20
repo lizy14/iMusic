@@ -12,8 +12,8 @@
 #include "Parser.h"
 #include "SongInfo.h"
 #include "Segmentation.h"
-#include "String.h"
-#include "StringList.h"
+#include "CharString.h"
+#include "CharStringList.h"
 #include "Test.h"
 #include <iostream>
 #include <string>
@@ -24,15 +24,15 @@
 int entryPoint(int argc, char** argv);
 
 // I/O operations
-std::ostream& operator<<(std::ostream& os, N::SongInfo& song);
+std::ostream& operator<<(std::ostream& os, Zhaoyang::SongInfo& song);
 std::string getFileContent(std::string filename);
-N::List<N::String>& getInputFilenames(N::String input_directory);
-template<class T>std::ostream& operator<<(std::ostream& os, N::List<T>& list);
+Zhaoyang::CharStringList& getInputFilenames(Zhaoyang::CharString input_directory);
+template<class T>std::ostream& operator<<(std::ostream& os, Zhaoyang::List<T>& list);
 
 #define USE_HARD_CODED_PARAMETERS	
 
 int main(int argc, char** argv){
-	//N::test();return 0;
+	Zhaoyang::Test::test();return system("pause");
 
 #ifdef USE_HARD_CODED_PARAMETERS
 	int argc_=4;
@@ -58,42 +58,41 @@ int entryPoint(int argc, char** argv){
 		return 0;
 	}
 
-	//删除 argv[2, 3] 路径末尾的 '\'
-	for(int i=2; i<=3; i++){
-		int len = strlen(argv[i]);
-		if(argv[i][len-1]=='\\')
-			argv[i][len-1]=0;
-	}
 
 	//TODO: 路径参数合法性检查
-	N::String config_filename = argv[1];
-	N::Segmentation segmentation;
-	N::String input_directory = argv[2];
-	N::String output_directory = argv[3];
+	//确保路径以 '\' 结尾
+	Zhaoyang::CharString config_filename = argv[1];
+	Zhaoyang::Segmentation segmentation;
+	Zhaoyang::CharString input_directory = argv[2];
+	if(input_directory[-1]!='\\')
+		input_directory.append('\\');
+	Zhaoyang::CharString output_directory = argv[3];
+	if(output_directory[-1]!='\\')
+		output_directory.append('\\');
 	std::cout << "Input directory: " << input_directory << std::endl;
 	std::cout << "Output directory: " << output_directory << std::endl;
 
 
 	//从`input_directory`获取文件名列表（0001.html, 0002.html, ....）
-	N::List<N::String> filenames = getInputFilenames(input_directory);
+	Zhaoyang::List<Zhaoyang::CharString> filenames = getInputFilenames(input_directory);
 	std::cout << "Input filenames: " << std::endl << filenames << std::endl;
 
 	//下面开始遍历这些文件名
 	for(int i=0; i<filenames.length; i++){
-		N::String filename = filenames[i];
-		N::String full_filename = input_directory + N::String("\\") + filenames[i];
+		Zhaoyang::CharString filename = filenames[i];
+		Zhaoyang::CharString full_filename = input_directory + filenames[i];
 
-		N::String output_filename_without_ext = output_directory + N::String("\\") + filename.subString(0, filename.indexOf('.'));
-		N::String info_filename = output_filename_without_ext + N::String(".info");
-		N::String seg_filename = output_filename_without_ext + N::String(".txt");
+		Zhaoyang::CharString output_filename_without_ext = output_directory + filename.subString(0, filename.indexOf('.'));
+		Zhaoyang::CharString info_filename = output_filename_without_ext + Zhaoyang::CharString(".info");
+		Zhaoyang::CharString seg_filename = output_filename_without_ext + Zhaoyang::CharString(".txt");
 
 		std::cout << "Loading " << full_filename << std::endl;
-		N::String content = getFileContent(full_filename);
+		Zhaoyang::CharString content = getFileContent(full_filename);
 
 		std::cout << "Parsing..." << std::endl;
-		N::Parser parser(content);
-		N::SongInfo songInfo = parser.songInfo;
-		N::List<N::String> segResult = segmentation.exec(parser.songInfo.lyric);
+		Zhaoyang::Parser parser(content);
+		Zhaoyang::SongInfo songInfo = parser.songInfo;
+		Zhaoyang::List<Zhaoyang::CharString> segResult = segmentation.exec(parser.songInfo.lyric);
 
 		std::cout << "Writing to " << info_filename << std::endl;
 		std::ofstream info_file(info_filename);
@@ -119,10 +118,10 @@ std::string getFileContent(std::string filename){
 	}
 	return _;
 }
-N::List<N::String>& getInputFilenames(N::String input_directory){
-	N::List<N::String> *filenames = new N::List<N::String>();
-	N::String command;
-	command = N::String("dir ") + input_directory + N::String("\\*.html /b > filelist.txt");
+Zhaoyang::CharStringList& getInputFilenames(Zhaoyang::CharString input_directory){
+	Zhaoyang::CharStringList *filenames = new Zhaoyang::CharStringList();
+	Zhaoyang::CharString command;
+	command = Zhaoyang::CharString("dir ") + input_directory + Zhaoyang::CharString("\\*.html /b > filelist.txt");
 	std::system(std::string(command).c_str());
 
 	std::ifstream file("filelist.txt");
@@ -136,7 +135,7 @@ N::List<N::String>& getInputFilenames(N::String input_directory){
 	std::system("del filelist.txt /q /f /a");
 	return *filenames;
 }
-std::ostream& operator<<(std::ostream& os, N::SongInfo& song){
+std::ostream& operator<<(std::ostream& os, Zhaoyang::SongInfo& song){
 	os << song.title << std::endl;
 	os << song.singer << std::endl;
 	os << song.album << std::endl;
@@ -146,7 +145,7 @@ std::ostream& operator<<(std::ostream& os, N::SongInfo& song){
 	os << song.lyric << std::endl;
 	return os;
 }
-template<class T>std::ostream& operator<<(std::ostream& os, N::List<T>& list){
+template<class T>std::ostream& operator<<(std::ostream& os, Zhaoyang::List<T>& list){
 	for(int i=0; i<list.length; i++)
 		os << list[i] << std::endl;
 	return os;

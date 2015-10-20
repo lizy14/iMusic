@@ -9,16 +9,15 @@
 */
 
 #pragma once
-#include "String.h"
+#include "CharString.h"
 #include "SongInfo.h"
-#include "List.h"
 
-namespace N{
+namespace Zhaoyang{
 	class Parser{
 	public:
 		SongInfo songInfo;
 	public:
-		Parser(String);
+		Parser(CharString);
 		~Parser();
 	};
 }

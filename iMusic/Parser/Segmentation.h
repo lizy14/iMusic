@@ -10,15 +10,13 @@
 
 #pragma once
 
-#include "StringList.h"
-using N::String;
-using N::StringList;
+#include "CharStringList.h"
 
-namespace N{
+namespace Zhaoyang{
 	class Segmentation{
 	public:
 		Segmentation(void);
 		~Segmentation(void);
-		static StringList& exec(String);
+		static CharStringList& exec(CharString);
 	};
 }

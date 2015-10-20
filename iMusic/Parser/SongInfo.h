@@ -9,19 +9,19 @@
 */
 #pragma once
 
-#include "String.h"
+#include "CharString.h"
 
-namespace N{
+namespace Zhaoyang{
 	class SongInfo{
 	public:
 		//文本字段
-		String title;   //音乐名称
-		String singer;  //歌手名称
-		String album;   //专辑名称
-		String pubDate; //发行时间
-		String composer;//作词
-		String lyricist;//作曲
-		String lyric;   //歌词
+		CharString title;   //音乐名称
+		CharString singer;  //歌手名称
+		CharString album;   //专辑名称
+		CharString pubDate; //发行时间
+		CharString composer;//作词
+		CharString lyricist;//作曲
+		CharString lyric;   //歌词
 	};
 
 }

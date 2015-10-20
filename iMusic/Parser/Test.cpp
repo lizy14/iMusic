@@ -8,9 +8,18 @@
 »·¡¡¾³: Visual Studio 2012 (MSVC++ 11.0)
 */
 #include "Test.h"
-namespace N{
+namespace Zhaoyang{ namespace Test{
 	void test(){
-		kmp();
+		str();
+	}
+	void seg(){
+		;
+	}
+	void str(){
+		cout << CharString("hello, ")+CharString("world") << endl;
+		CharString str ="goodbye, world.";
+		str[-1]='~';
+		cout << str;
 	}
 	void stack(){
 		Stack<int> stack;
@@ -23,17 +32,14 @@ namespace N{
 			stack.pop();
 		}
 	}
-
 	void kmp(){
-		String sentence="the quick brown fox";
-		String word="brown";
+		CharString sentence="the quick brown fox";
+		CharString word="brown";
 		cout << sentence.indexOf('w') << endl; //13
 		cout << sentence.indexOf(word) << endl; //10
 
-		int a = sentence.indexOf(String("quick"));
-		int b = sentence.indexOf(String("fox"));
+		int a = sentence.indexOf(CharString("quick"));
+		int b = sentence.indexOf(CharString("fox"));
 		cout << sentence.subString(a, b) << endl;//`quick brown `
-		cout << String("hello, ")+String("world") << endl;
 	}
-
-}
+}}

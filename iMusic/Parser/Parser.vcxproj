@@ -67,7 +67,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Segmentation.cpp" />
-    <ClCompile Include="String.cpp" />
+    <ClCompile Include="CharString.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -76,8 +76,8 @@
     <ClInclude Include="Segmentation.h" />
     <ClInclude Include="SongInfo.h" />
     <ClInclude Include="Stack.h" />
-    <ClInclude Include="String.h" />
-    <ClInclude Include="StringList.h" />
+    <ClInclude Include="CharString.h" />
+    <ClInclude Include="CharStringList.h" />
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

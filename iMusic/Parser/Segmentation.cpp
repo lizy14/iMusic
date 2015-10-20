@@ -9,18 +9,19 @@
 */
 
 #include "Segmentation.h"
+namespace Zhaoyang{
 
+	Segmentation::Segmentation(void){
+	}
 
-N::Segmentation::Segmentation(void){
-}
+	Segmentation::~Segmentation(void){
+	}
 
-N::Segmentation::~Segmentation(void){
-}
-
-StringList& N::Segmentation::exec(String){
-	StringList *list = new StringList();
-	list->push(String("THIS_IS_WORD_A"));
-	list->push(String("THIS_IS_WORD_B"));
-	list->push(String("THIS_IS_WORD_C"));
-	return *list;
+	CharStringList& Segmentation::exec(CharString){
+		CharStringList *list = new CharStringList();
+		list->push(CharString("THIS_IS_WORD_A"));
+		list->push(CharString("THIS_IS_WORD_B"));
+		list->push(CharString("THIS_IS_WORD_C"));
+		return *list;
+	}
 }

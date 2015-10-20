@@ -1,5 +1,5 @@
 /*
-文件名: StringList.h
+文件名: CharStringList.h
 描　述: “字符串链表”数据结构
 
 作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
@@ -9,11 +9,11 @@
 */
 
 #pragma once
-#include "String.h"
+#include "CharString.h"
 #include "List.h"
 
-namespace N{
-	class StringList : public List<String>{
+namespace Zhaoyang{
+	class CharStringList : public List<CharString>{
 
 	};
 }

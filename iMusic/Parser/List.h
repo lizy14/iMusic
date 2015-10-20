@@ -11,7 +11,7 @@
 #pragma once
 #include <ostream>
 
-namespace N{
+namespace Zhaoyang{
 	template<class T>
 	class Item{
 	public:

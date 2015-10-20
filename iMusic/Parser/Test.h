@@ -14,15 +14,19 @@
 #include "Parser.h"
 #include "SongInfo.h"
 #include "Stack.h"
-#include "String.h"
-#include "StringList.h"
+#include "CharString.h"
+#include "CharStringList.h"
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
-namespace N{
-	void test();
-	void kmp();
-	void stack();
+namespace Zhaoyang{
+	namespace Test{
+		void test();
+		void str();
+		void kmp();
+		void stack();
+		void seg();
+	}
 }
