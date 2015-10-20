@@ -34,7 +34,8 @@ namespace Zhaoyang{
 			while(p!=nullptr){
 				q = p;
 				p = p->next;
-				delete q;
+				//TODO: 智能指针/写拷贝构造函数
+				//delete q;
 			}
 		}
 		void push(T item){

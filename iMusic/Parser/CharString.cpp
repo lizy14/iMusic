@@ -21,6 +21,7 @@ namespace Zhaoyang{
 		return;
 	}
 	CharString::~CharString(){
+		//TODO: 智能指针/写拷贝构造函数
 		//delete[] head;
 		return;
 	}
