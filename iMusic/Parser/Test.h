@@ -24,6 +24,7 @@ using std::endl;
 namespace Zhaoyang{
 	namespace Test{
 		void test();
+		void parser();
 		void str();
 		void kmp();
 		void stack();

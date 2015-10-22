@@ -9,8 +9,8 @@
 */
 
 #include "CharString.h"
+#include <iostream>
 namespace Zhaoyang{
-	const int CharString::REALLOCATE_SIZE = 1024;
 
 	CharString::CharString():head(nullptr),len(0),capacity(0){
 		return;
@@ -18,13 +18,21 @@ namespace Zhaoyang{
 	CharString::CharString(std::string str):head(nullptr),len(0),capacity(0){
 		for(char chr: str)
 			append(chr);
+
 		return;
+	}
+
+	CharString::CharString(CharString& str):head(nullptr),len(0),capacity(0){
+		int oldLength = str.length();
+		for(int i=0; i<oldLength; i++){
+			append(str[i]);
+		}
 	}
 	CharString::~CharString(){
-		//TODO: 智能指针/写拷贝构造函数
-		//delete[] head;
+		delete[] head;
 		return;
 	}
+
 	char& CharString::operator[](int i) const{
 		if(i<0)
 			i += len;
@@ -34,23 +42,23 @@ namespace Zhaoyang{
 	}
 	void  CharString::append(char chr){
 		if(len == capacity){
-			char *p = new char[len+REALLOCATE_SIZE];
+			char *p = new char[(len+1)*2];
 			for(int i=0; i<len; i++){
 				p[i] = operator[](i);
 			}
 			delete[] head;
 			head = p;
-			capacity += REALLOCATE_SIZE;
+			capacity = (len+1)*2;
 		}
 		head[len]=chr;
 		len++;
 
 	}
-	int CharString::length()const{
+	int CharString::length() const{
 		return this->len;
 	};
 
-	CharString CharString::subString(int start, int end){
+	CharString CharString::subString(int start, int end) const{
 		if(end==-1 || end>length())
 			end = length();
 		if(start<0)
@@ -65,14 +73,14 @@ namespace Zhaoyang{
 	//find W(word) in S(sentence)
 	//return the index of the first appearance
 	//implementing KMP algorithm
-	int CharString::indexOf(CharString W) const{
+	int CharString::indexOf(CharString W, int start) const{
 		if(W.length() == 0)
 			return NOT_FOUND;
 		if(W.length() == 1)
-			return indexOf(W[0]);
+			return indexOf(W[0], start);
 
 		//first, make the table
-		std::vector<int> T(W.length());
+		int* T = new int[W.length()];
 		int pos=2, cnd=0;
 		T[0] = -1;
 		T[1] = 0;
@@ -92,7 +100,7 @@ namespace Zhaoyang{
 
 
 		//now let's do KMP 
-		int m=0, i=0;
+		int m=start, i=0;
 		while((m + i) < length()){
 			if(W[i] == operator[](m+i)){
 				if(i == W.length() - 1)
@@ -111,9 +119,8 @@ namespace Zhaoyang{
 		return NOT_FOUND;
 	}
 
-	int CharString::indexOf(char chr) const{
-		int i=0;
-		for(int i=0; i<length(); i++){
+	int CharString::indexOf(char chr, int start) const{
+		for(int i=start; i<length(); i++){
 			if(chr == operator[](i))
 				return i;
 		}
@@ -136,5 +143,13 @@ namespace Zhaoyang{
 			str.append(str2[i]);
 		}
 		return str;
+	}
+	CharString& CharString::operator=(const CharString& str){
+		head=nullptr, len=0, capacity=0;
+		int oldLength = str.length();
+		for(int i=0; i<oldLength; i++){
+			append(str[i]);
+		}
+		return *this;
 	}
 }

@@ -64,6 +64,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Segmentation.cpp" />
@@ -71,6 +72,7 @@
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IO.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Segmentation.h" />

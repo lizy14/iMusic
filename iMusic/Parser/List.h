@@ -28,7 +28,9 @@ namespace Zhaoyang{
 		Item<T> *tail;
 		int length;
 	public:
-		List():head(nullptr),tail(nullptr),length(0){}
+		List():
+			head(nullptr),tail(nullptr),length(0),
+			lastQueryPointer(nullptr){}
 		~List(){
 			Item<T> *p = head, *q;
 			while(p!=nullptr){
@@ -53,18 +55,33 @@ namespace Zhaoyang{
 		bool empty(){
 			return (head==nullptr);
 		}
+		int lastQueryIndex;
+		Item<T> *lastQueryPointer;
 		T operator[](int index){
 			//TODO: 保存上一次下标查询的结果
 			//这样一来，使用下标遍历链表只需线性时间
-			int i=0;
-			Item<T> *p=head;
+			int i;
+			Item<T> *p;
+			if(lastQueryPointer!=nullptr){
+				i=lastQueryIndex;
+				p=lastQueryPointer;
+			}else{
+				i=0;
+				p=head;
+			}
 			do{
 				if(i == index){
+					lastQueryIndex = i;
+					lastQueryPointer = p;
 					return p->data;
 				}
-
-				i++;
-				p=p->next;
+				if(i<index){
+					i++;
+					p=p->next;
+				}else{
+					i--;
+					p=p->prev;
+				}
 
 			}while(p != nullptr);
 			throw "Index out of range";

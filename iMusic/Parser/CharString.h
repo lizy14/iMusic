@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <vector>
+
 #include <string>
 #include <ostream>
 
@@ -19,17 +19,20 @@ namespace Zhaoyang{
 		char* head;
 		int len;
 		int capacity;
-		static const int REALLOCATE_SIZE;
 		static const int NOT_FOUND = -1;
 	public:
+		CharString();
+		~CharString();
+		CharString(CharString& str);
+		CharString& operator=(const CharString& str);
+
 		char& operator[](int i) const;
 		void append(char chr);
 		int length() const;
-		CharString();
-		~CharString();
-		int indexOf(char) const;
-		int indexOf(CharString) const;
-		CharString subString(int start, int end=-1);
+		
+		int indexOf(char, int=0) const;
+		int indexOf(CharString, int=0) const;
+		CharString subString(int start, int end=-1) const;
 		
 		//conversion from/to std::string
 		CharString(std::string str);

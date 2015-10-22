@@ -11,6 +11,7 @@
 #pragma once
 #include "CharString.h"
 #include "SongInfo.h"
+#include "Stack.h"
 
 namespace Zhaoyang{
 	class Parser{

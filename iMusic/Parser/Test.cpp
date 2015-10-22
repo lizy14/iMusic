@@ -7,19 +7,36 @@
 
 »·¡¡¾³: Visual Studio 2012 (MSVC++ 11.0)
 */
+#include "IO.h"
 #include "Test.h"
+
 namespace Zhaoyang{ namespace Test{
 	void test(){
-		str();
+		int argc_=4;
+		char inputDirectory[]="O:\\iMusic\\pages";
+		char outputDirectory[]="O:\\iMusic\\output\\";
+		char *argv_[4];
+		argv_[1] = "THERE_IS_NO_CONFIG_FILE";
+		argv_[2] = inputDirectory;
+		argv_[3] = outputDirectory;
+		entryPoint(argc_, argv_);
+	}
+	void parser(){
+		Parser parser(std::string(""));
 	}
 	void seg(){
 		;
 	}
 	void str(){
-		cout << CharString("hello, ")+CharString("world") << endl;
-		CharString str ="goodbye, world.";
-		str[-1]='~';
-		cout << str;
+
+		CharString word = "world.";
+        word[-1]='~';
+		CharString sentence = "hello, ";
+		CharString newSentence = sentence + word;
+		
+		sentence = newSentence;
+		newSentence = newSentence + word;
+		cout << newSentence;
 	}
 	void stack(){
 		Stack<int> stack;
