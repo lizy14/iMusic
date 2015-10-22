@@ -32,7 +32,7 @@ namespace Zhaoyang{
 				return;
 			}
 		}
-		T top(){
+		T& top(){
 			if(tail == nullptr){
 				throw "Stack is empty";
 			}else{

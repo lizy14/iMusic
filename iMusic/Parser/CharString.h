@@ -19,6 +19,7 @@ namespace Zhaoyang{
 		char* head;
 		int len;
 		int capacity;
+	public:
 		static const int NOT_FOUND = -1;
 	public:
 		CharString();
