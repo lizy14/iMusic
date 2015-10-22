@@ -76,6 +76,7 @@ string getFileContent(string filename){
 		string __;
 		getline(file, __);
 		_ += __;
+		_ += '\n';
 	}
 	return _;
 }

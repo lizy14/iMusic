@@ -30,7 +30,10 @@ namespace Zhaoyang{
 			return a;
 		return (a<b?a:b);
 	}
-	CharString removeTags(CharString str){
+	int max_(int a, int b){
+		return (a>b?a:b);
+	}
+	CharString innerText(CharString str){
 		CharString ret = str;
 		// &lt; '<'
 		int lt, rt;
@@ -108,32 +111,71 @@ namespace Zhaoyang{
 				else{
 					endOfTagName -= 1;
 				}
-				Tag tag(str.subString(i+1, endOfTagName+1));
-				tag.start = i;
-				i = tag.inner = str.indexOf('>', i) + 1;
-				stack.push(tag);
+				CharString tagName = str.subString(i+1, endOfTagName+1);
+				if(tagName.indexOf(CharString("img"))==0){
+					//ignoring tags without the closing `</>`
+					i = str.indexOf('>', i) + 1;
+				}else{
+					Tag tag(tagName);
+					tag.start = i;
+					i = tag.inner = str.indexOf('>', i) + 1;
+					stack.push(tag);
+				}
 			}
 		}
+		if(!stack.empty())
+			throw "found mismatch tag(s)";
 		//整个文档解析完毕，全部节点已存入链表 `allTags`，
-		//保存了每个标签的开始、内容、结束位置，丢失嵌套层次关系
+		//保存了每个标签的名称、始末位置，丢失嵌套层次关系
 
 
-		//下面遍历该链表，寻找需要的信息
-		//链表的 operator[] 做了处理，用下标遍历仅耗线性时间
+		//下面遍历该链表，根据标签名称提取信息
+		//（链表的 operator[] 做了处理，用下标遍历仅耗线性时间）
 		int length = allTags.length;
+		int li=0;
 		for(int i=0; i<length; i++){
 			Tag currentTag = allTags[i];
 			if(currentTag.tagName.indexOf(CharString("h2"))==0){
-				songInfo.title = trim(removeTags(str.subString(currentTag.start, currentTag.end)));
+				songInfo.title = trim(innerText(str.subString(currentTag.start, currentTag.end)));
 			}
 			if(currentTag.tagName.indexOf(CharString("textarea"))==0){
-				songInfo.lyric = trim(removeTags(str.subString(currentTag.start, currentTag.end)));
+				songInfo.lyric = trim(innerText(str.subString(currentTag.start, currentTag.end)));
 			}
 			if(currentTag.tagName.indexOf(CharString("li"))==0){
-				songInfo.pubDate = trim(removeTags(str.subString(currentTag.start, currentTag.end)));
+				li++;
+				CharString str_ = trim(innerText(str.subString(currentTag.start, currentTag.end)));
+				switch(li){
+				case 1:
+					songInfo.singer = str_.subString(6);/*magic number: length of "歌手："*/
+					break;
+				case 3:
+					songInfo.album = str_.subString(10);
+					break;
+				case 4:
+					songInfo.pubDate = str_.subString(10);
+					break;
+				default:
+					break;
+				}
 			}
 		}
-		
+		//下面从歌词的前两行提取词曲作者
+		CharString i__ = "曲：";
+		CharString j__ = "词：";
+		int i, i_=0, j, j_=0;
+		i = songInfo.lyric.indexOf(i__);
+		if(i!=CharString::NOT_FOUND){
+			i_ = songInfo.lyric.indexOf('\n', i);
+			songInfo.composer = songInfo.lyric.subString(i+i__.length(), i_);
+		}
+		j = songInfo.lyric.indexOf(j__);
+		if(j!=CharString::NOT_FOUND){
+			j_ = songInfo.lyric.indexOf('\n', j);
+			songInfo.lyricist = songInfo.lyric.subString(j+j__.length(), j_);
+		}
+
+		int k = max_(i_, j_);
+		songInfo.lyric = trim(songInfo.lyric.subString(k+1));
 		return;
 	}
 
