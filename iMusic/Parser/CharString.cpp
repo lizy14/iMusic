@@ -9,7 +9,7 @@
 */
 
 #include "CharString.h"
-#include <iostream>
+
 namespace Zhaoyang{
 
 	CharString::CharString():head(nullptr),len(0),capacity(0){
@@ -151,5 +151,15 @@ namespace Zhaoyang{
 			append(str[i]);
 		}
 		return *this;
+	}
+	bool operator==(const CharString& str1, const CharString& str2){
+		int len = str1.length();
+		if(len!=str2.length())
+			return false;
+		for(int i=1; i<len; i++){
+			if(str1[i] != str2[i])
+				return false;
+		}
+		return true;
 	}
 }

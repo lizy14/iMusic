@@ -11,12 +11,13 @@
 #pragma once
 
 #include "CharStringList.h"
+#include <fstream>
 
 namespace Zhaoyang{
 	class Segmentation{
 	public:
-		Segmentation(void);
+		Segmentation(CharString);//读取配置文件，加载词库
 		~Segmentation(void);
-		static CharStringList& exec(CharString);
+		static CharStringList exec(CharString);//对传入的字符串执行分词，返回分词结果
 	};
 }

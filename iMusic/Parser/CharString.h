@@ -49,5 +49,6 @@ namespace Zhaoyang{
 	};
 	std::ostream& operator<< (std::ostream& os, const CharString& str);
 	CharString operator+(const CharString& str1, const CharString& str2);
+	bool operator==(const CharString& str1, const CharString& str2);
 }
 

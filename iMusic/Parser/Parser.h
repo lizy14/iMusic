@@ -14,11 +14,36 @@
 #include "Stack.h"
 
 namespace Zhaoyang{
+	class Tag;
+
 	class Parser{
-	public:
+	private:
 		SongInfo songInfo;
+		List<Tag> allTags;
 	public:
-		Parser(CharString);
+		CharString str;
+	public:
+		Parser(CharString);//加载待解析的 html
 		~Parser();
+		SongInfo getSongInfo();//返回解析结果
+	};
+
+	int max_(int, int);
+	int min_(int, int);
+	CharString innerText(CharString);
+	bool isSpace(char);
+	CharString trim(CharString);
+
+	class Tag{
+	public:
+		CharString tagName;
+		int start;
+		int inner;
+		int end;
+		/*   01234567890123456789012345
+		     <p class>hello, world</p><
+		     ^        ^               ^ */
+		Tag(CharString _):tagName(_){}
+		Tag(){}
 	};
 }

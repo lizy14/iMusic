@@ -21,9 +21,8 @@ int entryPoint(int argc, char** argv){
 
 
 	//TODO: 路径参数合法性检查
-	//确保路径以 '\' 结尾
 	CharString config_filename = argv[1];
-	Segmentation segmentation;
+	//确保路径以 '\' 结尾
 	CharString input_directory = argv[2];
 	if(input_directory[-1]!='\\')
 		input_directory.append('\\');
@@ -37,6 +36,11 @@ int entryPoint(int argc, char** argv){
 	//从`input_directory`获取文件名列表（0001.html, 0002.html, ....）
 	CharStringList filenames = getInputFilenames(input_directory);
 	cout << "Input filenames: " << endl << filenames << endl;
+
+	//初始化分词器（加载词典）
+	cout << "Loading vocabulary..." << endl;
+	Segmentation segmentation(config_filename);
+	cout << "Done." << endl << endl;
 
 	//下面开始遍历这些文件名
 	for(int i=0; i<filenames.length; i++){
@@ -52,8 +56,8 @@ int entryPoint(int argc, char** argv){
 
 		cout << "Parsing..." << endl;
 		Parser parser(content);
-		SongInfo songInfo = parser.songInfo;
-		CharStringList segResult = segmentation.exec(parser.songInfo.lyric);
+		SongInfo songInfo = parser.getSongInfo();
+		CharStringList segResult = segmentation.exec(songInfo.lyric);
 
 		cout << "Writing to " << info_filename << endl;
 		ofstream info_file(info_filename);

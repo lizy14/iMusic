@@ -11,17 +11,29 @@
 #include "Segmentation.h"
 namespace Zhaoyang{
 
-	Segmentation::Segmentation(void){
+	//constructor: load library here
+	Segmentation::Segmentation(CharString configFileName){
+		return;
+		std::ifstream file(configFileName);
+		std::string vocabularyFileName;
+		getline(file, vocabularyFileName);
+		file.close();
+		file.open(vocabularyFileName);
+		std::string _;
+		while(!file.eof()){
+			getline(file, _);
+			//add into vocabulary
+		}
 	}
 
 	Segmentation::~Segmentation(void){
 	}
 
-	CharStringList& Segmentation::exec(CharString){
-		CharStringList *list = new CharStringList();
-		list->push(CharString("THIS_IS_WORD_A"));
-		list->push(CharString("THIS_IS_WORD_B"));
-		list->push(CharString("THIS_IS_WORD_C"));
-		return *list;
+	CharStringList Segmentation::exec(CharString){
+		CharStringList list = CharStringList();
+		list.push(CharString("THIS_IS_WORD_A"));
+		list.push(CharString("THIS_IS_WORD_B"));
+		list.push(CharString("THIS_IS_WORD_C"));
+		return list;
 	}
 }

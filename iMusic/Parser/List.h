@@ -36,8 +36,16 @@ namespace Zhaoyang{
 			while(p!=nullptr){
 				q = p;
 				p = p->next;
-				//TODO: 智能指针/写拷贝构造函数
-				//delete q;
+				delete q;
+			}
+		}
+		List(List& old):
+			head(nullptr),tail(nullptr),length(0),
+			lastQueryPointer(nullptr){
+			Item<T> *p = old.head;
+			while(p!=nullptr){
+				push(p->data);
+				p = p->next;
 			}
 		}
 		void push(T item){
