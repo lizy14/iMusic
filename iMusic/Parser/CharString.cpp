@@ -162,4 +162,17 @@ namespace Zhaoyang{
 		}
 		return true;
 	}
+	bool CharString::operator<(const CharString& str1) const{
+		int len = str1.length();
+		if(len != length())
+			return len < length();
+
+		for(int i=1; i<len; i++){
+			if(str1[i] == operator[](i))
+				continue;
+			return (str1[i] < operator[](i));
+		}
+		//identical
+		return false;
+	}
 }

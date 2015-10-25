@@ -12,11 +12,12 @@
 
 namespace Zhaoyang{ namespace Test{
 	void test(){
+		//str();return;
 		int argc_=4;
-		char inputDirectory[]="O:\\iMusic\\pages";
-		char outputDirectory[]="O:\\iMusic\\output\\";
+		char inputDirectory[]="O:\\iMusic\\bin\\pages";
+		char outputDirectory[]="O:\\iMusic\\bin\\output\\";
 		char *argv_[4];
-		argv_[1] = "THERE_IS_NO_CONFIG_FILE";
+		argv_[1] = "O:\\iMusic\\bin\\iMusic.config";
 		argv_[2] = inputDirectory;
 		argv_[3] = outputDirectory;
 		entryPoint(argc_, argv_);
@@ -27,7 +28,15 @@ namespace Zhaoyang{ namespace Test{
 	void seg(){
 		;
 	}
+	void printBool(bool b){
+		cout << (b?"true":"false") <<endl;
+	}
 	void str(){
+		CharString word1 = "一一道来", word2 = "一一";
+		printBool(word1 < word2);
+		printBool(word2 < word1);
+		printBool(word1 < word1);
+		return;
 
 		CharString word = "world.";
         word[-1]='~';

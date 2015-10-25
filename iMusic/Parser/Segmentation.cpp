@@ -10,30 +10,36 @@
 
 #include "Segmentation.h"
 namespace Zhaoyang{
-
+	const int Segmentation::MAX_WORD_LENGTH = 8;
+	std::map<CharString, bool> Segmentation::vocabulary;
+	bool Segmentation::isWord(CharString word){
+		return vocabulary.find(word) != vocabulary.end();
+	}
+	
 	//constructor: load library here
 	Segmentation::Segmentation(CharString configFileName){
-		return;
+		
 		std::ifstream file(configFileName);
 		std::string vocabularyFileName;
 		getline(file, vocabularyFileName);
 		file.close();
 		file.open(vocabularyFileName);
 		std::string _;
+		int i=0;
 		while(!file.eof()){
 			getline(file, _);
-			//add into vocabulary
+			vocabulary[_] = true;
 		}
 	}
 
 	Segmentation::~Segmentation(void){
 	}
 
-	CharStringList Segmentation::exec(CharString){
+	CharStringList Segmentation::exec(CharString str){
 		CharStringList list = CharStringList();
-		list.push(CharString("THIS_IS_WORD_A"));
-		list.push(CharString("THIS_IS_WORD_B"));
-		list.push(CharString("THIS_IS_WORD_C"));
+		if(str.length() == 0)
+			return list;
+		int iA, iB; //starting/ending index 
 		return list;
 	}
 }
