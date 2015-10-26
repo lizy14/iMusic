@@ -12,7 +12,7 @@
 #include "Test.h"
 int main(int argc, char** argv){
 	//for debugging
-	Test::test(); return system("pause");
+	//Test::test(); return system("pause");
 
 	//for assignment submission
 	try{

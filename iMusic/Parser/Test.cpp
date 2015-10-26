@@ -13,6 +13,7 @@
 namespace Zhaoyang{ namespace Test{
 	void test(){
 		//str();return;
+		//seg();return;
 		int argc_=4;
 		char inputDirectory[]="O:\\iMusic\\bin\\pages";
 		char outputDirectory[]="O:\\iMusic\\bin\\output\\";
@@ -26,13 +27,16 @@ namespace Zhaoyang{ namespace Test{
 		Parser parser(std::string(""));
 	}
 	void seg(){
-		;
+		Segmentation seg(CharString("E:\\ongoing\\iMusic\\bin\\test.config"));
+		CharStringList list = seg.exec(CharString("计算语言学apple tree课程是banana三个学分"));
+		for(int i=0; i<list.length; i++)
+			cout << list[i] << endl;
 	}
 	void printBool(bool b){
 		cout << (b?"true":"false") <<endl;
 	}
 	void str(){
-		CharString word1 = "一一道来", word2 = "一一";
+		CharString word1 = "登记", word2 = "是记";
 		printBool(word1 < word2);
 		printBool(word2 < word1);
 		printBool(word1 < word1);

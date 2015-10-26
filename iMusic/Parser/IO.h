@@ -35,4 +35,4 @@ extern int entryPoint(int argc, char** argv);
 ostream& operator<<(ostream& os, SongInfo& song);
 string getFileContent(string filename);
 CharStringList getInputFilenames(CharString input_directory);
-template<class T>ostream& operator<<(ostream& os, List<T>& list);
+template<class T> ostream& operator<<(ostream& os, List<T>& list);

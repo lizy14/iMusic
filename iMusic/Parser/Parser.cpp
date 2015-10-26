@@ -76,14 +76,14 @@ namespace Zhaoyang{
 		for(int ¡ü_¡ü=0; ¡ü_¡ü<length; ¡ü_¡ü++){
 			Tag currentTag = allTags[¡ü_¡ü];
 			if(currentTag.tagName.indexOf(CharString("h2"))==0){
-				songInfo.title = trim(innerText(str.subString(currentTag.start, currentTag.end)));
+				songInfo.title = (innerText(str.subString(currentTag.start, currentTag.end))).trim();
 			}
 			if(currentTag.tagName.indexOf(CharString("textarea"))==0){
-				songInfo.lyric = trim(innerText(str.subString(currentTag.start, currentTag.end)));
+				songInfo.lyric = (innerText(str.subString(currentTag.start, currentTag.end))).trim();
 			}
 			if(currentTag.tagName.indexOf(CharString("li"))==0){
 				li++;
-				CharString str_ = trim(innerText(str.subString(currentTag.start, currentTag.end)));
+				CharString str_ = (innerText(str.subString(currentTag.start, currentTag.end))).trim();
 				switch(li){
 				case 1:
 					songInfo.singer = str_.subString(6);/*magic number: length of "¸èÊÖ£º"*/
@@ -138,7 +138,7 @@ namespace Zhaoyang{
 			songInfo.composer = songInfo.composer + composerB;
 		}
 
-		songInfo.lyric = trim(songInfo.lyric.subString(¡ú_¡û));
+		songInfo.lyric = (songInfo.lyric.subString(¡ú_¡û)).trim();
 		return songInfo;
 	}
 
@@ -165,33 +165,5 @@ namespace Zhaoyang{
 		}
 		return ret;
 	}
-	bool isSpace(char chr){
-		char space[]={' ','\n', '\r', '\t'};
-		int nSpace = sizeof(space)/sizeof(char);
-		for(int i=0; i<nSpace; i++){
-			if(space[i]==chr)
-				return true;
-		}
-		return false;
-	}
-	CharString trim(CharString str){
-		CharString ret;
-		int left = 0, right = str.length()-1;
-		if(right<=left)
-			return str;
-		while(1){
-			if(isSpace(str[left]))
-				left++;
-			else
-				break;
-		}
-		while(1){
-			if(isSpace(str[right]))
-				right--;
-			else
-				break;
-		}
-		ret = str.subString(left, right+1);
-		return ret;
-	}
+
 }

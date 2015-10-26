@@ -23,6 +23,7 @@ using std::endl;
 
 namespace Zhaoyang{
 	namespace Test{
+		void printBool(bool);
 		void test();
 		void parser();
 		void str();

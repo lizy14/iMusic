@@ -18,7 +18,6 @@ namespace Zhaoyang{
 	CharString::CharString(std::string str):head(nullptr),len(0),capacity(0){
 		for(char chr: str)
 			append(chr);
-
 		return;
 	}
 
@@ -33,14 +32,14 @@ namespace Zhaoyang{
 		return;
 	}
 
-	char& CharString::operator[](int i) const{
+	inline char& CharString::operator[](int i) const{
 		if(i<0)
 			i += len;
 		if(i<0 || i>=len)
 			throw "Subscript out of range";
 		return head[i];
 	}
-	void  CharString::append(char chr){
+	void CharString::append(char chr){
 		if(len == capacity){
 			char *p = new char[(len+1)*2];
 			for(int i=0; i<len; i++){
@@ -54,7 +53,7 @@ namespace Zhaoyang{
 		len++;
 
 	}
-	int CharString::length() const{
+	inline int CharString::length() const{
 		return this->len;
 	};
 
@@ -163,16 +162,52 @@ namespace Zhaoyang{
 		return true;
 	}
 	bool CharString::operator<(const CharString& str1) const{
-		int len = str1.length();
-		if(len != length())
-			return len < length();
+		int len;
+		if(str1.length() != length())
+			return (str1.length() < length());//len = str1.length();
+		else
+			len = length();
 
-		for(int i=1; i<len; i++){
+		for(int i=0; i<len; i++){
 			if(str1[i] == operator[](i))
 				continue;
 			return (str1[i] < operator[](i));
 		}
 		//identical
+		return false;//str1IsShorter;
+	}
+
+
+	bool CharString::isSpace(char chr){
+		char space[]={' ','\n', '\r', '\t'};
+		int nSpace = sizeof(space)/sizeof(char);
+		for(int i=0; i<nSpace; i++){
+			if(space[i]==chr)
+				return true;
+		}
 		return false;
+	}
+	 bool CharString::isASCII(char chr){
+		return (chr<128 && chr>0);
+	}
+	CharString CharString::trim(){
+		CharString ret;
+		int left = 0, right = length()-1;
+		if(right<=left)
+			return *this;
+		while(1){
+			if(isSpace(operator[](left)))
+				left++;
+			else
+				break;
+		}
+		while(1){
+			if(isSpace(operator[](right)))
+				right--;
+			else
+				break;
+		}
+		ret = subString(left, right+1);
+		return ret;
 	}
 }

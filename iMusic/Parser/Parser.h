@@ -31,8 +31,7 @@ namespace Zhaoyang{
 	int max_(int, int);
 	int min_(int, int);
 	CharString innerText(CharString);
-	bool isSpace(char);
-	CharString trim(CharString);
+	
 
 	class Tag{
 	public:

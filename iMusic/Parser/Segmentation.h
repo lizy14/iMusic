@@ -12,20 +12,22 @@
 
 #include "CharStringList.h"
 
-#include <map>
+#include <set>
 #include <fstream>
 #include <iostream>
 using std::cout;
 using std::endl;
 namespace Zhaoyang{
+	typedef std::set<CharString> Vocabulary;
 	class Segmentation{
 	private:
 		const static int MAX_WORD_LENGTH;
+		const static int MIN_WORD_LENGTH;
 	public:
-		static std::map<CharString, bool> vocabulary;
-		static bool isWord(CharString);
+		Vocabulary vocabulary;
+		bool isWord(CharString);
 		Segmentation(CharString);//读取配置文件，加载词库
 		~Segmentation(void);
-		static CharStringList exec(CharString);//对传入的字符串执行分词，返回分词结果
+		CharStringList exec(CharString);//对传入的字符串执行分词，返回分词结果
 	};
 }

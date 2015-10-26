@@ -30,13 +30,17 @@ namespace Zhaoyang{
 		char& operator[](int i) const;
 		void append(char chr);
 		int length() const;
+
+		static bool isSpace(char);
+		static bool isASCII(char);
+		CharString trim();
 		
 		int indexOf(char, int=0) const;
 		int indexOf(CharString, int=0) const;
 		CharString subString(int start, int end=-1) const;
 		
 		//conversion from/to std::string
-		CharString(std::string str);
+		CharString(const std::string str);
 		operator std::string(){
 			std::string str;
 			int len = length();

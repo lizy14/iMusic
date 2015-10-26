@@ -69,7 +69,7 @@ int entryPoint(int argc, char** argv){
 
 		cout << "Done." << endl << endl;
 	}
-	cout << "All done." << endl << endl;
+	cout << "All done. Finishing..." << endl << endl;
 	return 0;
 }
 
