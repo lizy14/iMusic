@@ -12,7 +12,10 @@
 namespace Zhaoyang{
 	const int Segmentation::MAX_WORD_LENGTH = 10;
 	const int Segmentation::MIN_WORD_LENGTH = 2;
-
+	bool Segmentation::isPunctuation(CharString c){
+		CharString s = "£¨(£©)£¬,¡£.£¿?£¡!£º:£»;¡°\"¡®\'";
+		return s.indexOf(c) != CharString::NOT_FOUND;
+	}
 	bool Segmentation::isWord(CharString word){
 		auto i = vocabulary.find(word);
 		if(i != vocabulary.end()){
@@ -93,7 +96,8 @@ namespace Zhaoyang{
 			iB = MAX_WORD_LENGTH;
 			word = str.subString(iA, iA+iB);
 			if(isWord(word)){
-				list.push(word);
+				if(!isPunctuation(word))
+					list.push(word);
 				iA += iB;
 				continue;
 			}else{
@@ -101,13 +105,16 @@ namespace Zhaoyang{
 					iB --;
 					word = str.subString(iA, iA+iB);
 					if(isWord(word)){
-						list.push(word);
+						if(!isPunctuation(word))
+							list.push(word);
 						iA += iB;
 						goto outside_continue;
 					}
 				}
 				//single-character word
-				list.push(str.subString(iA, iA + iB));
+				word = str.subString(iA, iA + iB);
+				if(!isPunctuation(word))
+					list.push(word);
 				iA += iB;
 				continue;
 			}

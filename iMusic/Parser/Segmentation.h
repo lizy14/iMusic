@@ -26,6 +26,7 @@ namespace Zhaoyang{
 	public:
 		Vocabulary vocabulary;
 		bool isWord(CharString);
+		bool isPunctuation(CharString);
 		Segmentation(CharString);//读取配置文件，加载词库
 		~Segmentation(void);
 		CharStringList exec(CharString);//对传入的字符串执行分词，返回分词结果
