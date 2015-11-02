@@ -87,7 +87,7 @@ string getFileContent(string filename){
 CharStringList getInputFilenames(CharString input_directory){
 	CharStringList filenames;
 	CharString command;
-	command = CharString("dir ") + input_directory + CharString("\\*.html /b > filelist.txt");
+	command = CharString("dir ") + input_directory + CharString("*.html /b > filelist.txt");
 	system(string(command).c_str());
 
 	ifstream file("filelist.txt");
