@@ -1,0 +1,48 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<link rel="stylesheet" href="material.min.css">
+<script src="material.min.js"></script>
+<script src="jquery.min.js" type="text/javascript"></script>
+<script>
+$.ajaxSetup({
+    processData: false
+});
+function exec_query(){
+    var url = 'http://localhost:2333/?query='+$('#textbox').val();
+    $.getJSON(url, function(data){
+        console.log(data);
+        render_result(data);
+    })
+    return false;
+}
+function render_result(data){
+    $('#result').html(unescape(data.msg));
+}
+function onkeydown_(event){
+    if(event.keyCode == 13)
+        exec_query();
+    return true;
+}
+</script>
+</head>
+
+<body style="margin-left: 100px">
+
+
+<p>
+
+    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <label class="mdl-textfield__label" for="user-note">请输入关键字：</label>
+        <input class="mdl-textfield__input" id="textbox" type="text" onkeydown="return onkeydown_(event);"></input>
+    </div>
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="button" onclick="exec_query();">查询</button>
+</p>
+
+<div id="result">
+</div>
+
+
+</body>
+</html>
