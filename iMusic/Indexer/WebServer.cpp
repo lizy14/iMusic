@@ -181,10 +181,10 @@ int http_send_response(SOCKET soc, char *buf, int buf_len)
 
 
     /* ´¦Àí query ´®*/
-    QueryHandler(ofstream("response.json"), queryEscaped);
+    QueryHandler(ofstream("_response.json"), queryEscaped);
 
     FILE* res_file;
-    res_file = fopen("response.json", "r");
+    res_file = fopen("_response.json", "r");
     if(res_file == NULL)    
         return 0;
     fseek(res_file, 0, SEEK_END);
@@ -214,6 +214,7 @@ int http_send_response(SOCKET soc, char *buf, int buf_len)
     } while ((read_len > 0) && (file_len > 0));
 
     fclose(res_file);
+    system("del _response.json /q /f /a");
     
     return 1;
 }
