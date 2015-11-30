@@ -80,6 +80,8 @@
     <ClCompile Include="..\Parser\IO.cpp" />
     <ClCompile Include="..\Parser\Parser.cpp" />
     <ClCompile Include="..\Parser\Segmentation.cpp" />
+    <ClCompile Include="InvertedIndex.cpp" />
+    <ClCompile Include="JSON.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WebServer.cpp" />
   </ItemGroup>
@@ -92,6 +94,8 @@
     <ClInclude Include="..\Parser\Segmentation.h" />
     <ClInclude Include="..\Parser\SongInfo.h" />
     <ClInclude Include="..\Parser\Stack.h" />
+    <ClInclude Include="InvertedIndex.h" />
+    <ClInclude Include="JSON.h" />
     <ClInclude Include="WebServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

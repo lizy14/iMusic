@@ -24,7 +24,7 @@ namespace Zhaoyang{
 	public:
 		CharString();
 		~CharString();
-		CharString(CharString& str);
+		CharString(const CharString& str);
 		CharString& operator=(const CharString& str);
 
 		char& operator[](int i) const;
