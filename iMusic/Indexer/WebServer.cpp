@@ -1,9 +1,7 @@
 /*
 文件名: WebServer.cpp
-描　述: HTTP Server, 
-　　　  接收 GET 请求，提取 query 字串，返回结果 JSON
-　　　  仅支持 GB2312 编码
-       对外接口请见 `WebServer.h`
+描　述: 
+
        references: 
        http://bbs.csdn.net/topics/390187516, 
        http://blog.csdn.net/zzstack/article/details/20556051
@@ -99,7 +97,7 @@ string unescape(char * str){
 
 /************************************************************************/
 /* Modified  By Zhaoyang Li, 2015-11-30                                 */
-/* 向客户端提供的不再是文件内容。                                          */
+/* 向客户端提供的不仅是文件内容。                                          */
 /************************************************************************/
 
 /* 定义常量 */
@@ -108,13 +106,58 @@ string unescape(char * str){
 #define QUERY_LEN          1024     /* 查询串长度 */
 
 
-char *http_res_hdr_tmpl = "HTTP/1.1 200 OK\r\nServer: C++\r\n"
+char *http_res_hdr_tmpl = "HTTP/1.1 200 OK\r\nServer: Zhaoyang\r\n"
     "Accept-Ranges: bytes\r\nContent-Length: %d\r\nConnection: close\r\n"
     "Content-Type: %s\r\nAccess-Control-Allow-Origin: *\r\n\r\n";
 
-char* type = "application/json; charset=gb2312";
+char *http_404_tmpl = "HTTP/1.1 404 NOT FOUND\r\nContent-Length: 3\r\n"
+    "\r\n\r\n404";
 
 
+
+/* 定义文件类型对应的 Content-Type */
+struct doc_type
+{
+    char *suffix; /* 文件后缀 */
+    char *type;   /* Content-Type */
+};
+
+struct doc_type file_type[] = 
+{
+    {"html",    "text/html"  },
+    {"gif",     "image/gif"  },
+    {"jpeg",    "image/jpeg" },
+    {"jpg",     "image/jpeg" },
+    {"png",     "image/png"  },
+    {"js",      "application/javascript" },
+    {"css",     "test/css"   },
+    { NULL,      NULL        }
+};
+
+
+
+
+/**************************************************************************
+ *
+ * 函数功能: 根据文件后缀查找对应的 Content-Type.
+ *
+ * 参数说明: [IN] suffix, 文件名后缀;
+ *
+ * 返 回 值: 成功返回文件对应的 Content-Type, 失败返回 NULL.
+ *
+ **************************************************************************/
+char *http_get_type_by_suffix(const char *suffix)
+{
+    struct doc_type *type;
+
+    for (type = file_type; type->suffix; type++)
+    {
+        if (strcmp(type->suffix, suffix) == 0)
+            return type->type;
+    }
+
+    return NULL;
+}
 
 
 /**************************************************************************
@@ -122,37 +165,95 @@ char* type = "application/json; charset=gb2312";
  * 函数功能: 解析请求行, 得到查询字串. 请求行格式:
  *           [GET http://localhost:8080/?query=hello_world HTTP/1.1]
  *
- * 参数说明: [IN]  buf, 字符串指针数组;
+ * 参数说明:  [IN]  buf, 字符串指针数组;
  *           [IN]  buflen, buf 的长度;
  *           [OUT] query, 查询字串;
+ *           [OUT] filename, 文件名;
+ *           [OUT] type, Content-Type header;
  *
  * 返 回 值: void.
  *
  **************************************************************************/
-void http_parse_request_cmd(char *buf, int buflen, char *query)
+void http_parse_request_cmd(char *buf, int buflen, char *query, char* file_name, char* type)
 {
 
     int length = 0;
     char *begin, *end, *bias;
-    char* queryPrefix = "?query=";
+    char* queryPrefix = "/api?query=";
     
     
 
     begin = strstr(buf, queryPrefix);
     if(begin==0){
-        query = NULL;
-        return;  
+
+        int length = 0;
+        char *begin, *end, *bias;
+        char suffix[16];
+
+        /* 查找 URL 的开始位置 */
+        begin = strchr(buf, ' ');
+        if(begin == 0){
+            query[0]=0, file_name[0]=0, type[0]=0;
+            return;
+        }
+        begin += 1;
+
+        /* 查找 URL 的结束位置 */
+        end = strchr(begin, ' ');
+        if(end == 0){
+            query[0]=0, file_name[0]=0, type[0]=0;
+            return;
+        }
+        *end = 0;
+
+        bias = strrchr(begin, '/');
+        length = end - bias;
+
+        /* 找到文件名的开始位置 */
+        if ((*bias == '/') || (*bias == '\\'))
+        {
+            bias++;
+            length--;
+        }
+
+        /* 得到文件名 */
+        if (length > 0)
+        {
+            memcpy(file_name, bias, length);
+            file_name[length] = 0;
+
+            begin = strrchr(file_name, '.');
+            if (begin)
+                strcpy(suffix, begin + 1);
+        }
+        char* type_ = http_get_type_by_suffix(suffix); /* 文件对应的 Content-Type */
+        if (type_ == NULL)
+        {
+            printf("[Web] Unknown content type `%s`\n", file_name);
+
+            query[0]=0, file_name[0]=0, type[0]=0;
+            return;
+        }
+        strcpy(type, type_);
+        query[0]=0;
+        return;
     }
+    
+    strcpy(type, "application/json; charset=gb2312");
+
     begin += strlen(queryPrefix);
     
     
     end = strstr(begin, " HTTP/1.1");
     if(end==0){
-        query = NULL;
+        
+        query[0]=0, file_name[0]=0, type[0]=0;
         return;
+        
     }
     *end = 0;
     strcpy(query, begin);
+    file_name[0]=0;
 }
 
 
@@ -172,21 +273,40 @@ int http_send_response(SOCKET soc, char *buf, int buf_len)
     char read_buf[HTTP_BUF_SIZE];
     char http_header[HTTP_BUF_SIZE];
     char query[QUERY_LEN] = "";
-    
+    char filename[40] = {0};
+    char type[40] = {0};
+    FILE* res_file;
 
     /* 提取 query 串 */
-    http_parse_request_cmd(buf, buf_len, query);
-    string queryEscaped = unescape(query);
-    printf("[Web] Handling query `%s`\n", queryEscaped.c_str());
+    http_parse_request_cmd(buf, buf_len, query,filename, type);
+
+    if(query[0]){
+        string queryEscaped = unescape(query);
+        printf("[Web] Handling query `%s`\n", queryEscaped.c_str());
+
+        /* 处理 query 串*/
+        QueryHandler(ofstream("_response.json", ofstream::binary), queryEscaped);
+    
+        res_file = fopen("_response.json", "r");
+
+    }else if(filename[0]){
+
+        printf("[Web] Serving `%s`\n", filename);
+        string local_filename = (string("public/")+string(filename));
+        res_file = fopen(local_filename.c_str(), "rb+");
+
+    }else{
+
+        send(soc, http_404_tmpl, strlen(http_404_tmpl),0);return 1;
+
+    }
 
 
-    /* 处理 query 串*/
-    QueryHandler(ofstream("_response.json"), queryEscaped);
+    if(res_file == NULL){
+        send(soc, http_404_tmpl, strlen(http_404_tmpl),0);
+        return 1;
+    }
 
-    FILE* res_file;
-    res_file = fopen("_response.json", "r");
-    if(res_file == NULL)    
-        return 0;
     fseek(res_file, 0, SEEK_END);
     file_len = ftell(res_file);
     fseek(res_file, 0, SEEK_SET);
@@ -214,7 +334,8 @@ int http_send_response(SOCKET soc, char *buf, int buf_len)
     } while ((read_len > 0) && (file_len > 0));
 
     fclose(res_file);
-    system("del _response.json /q /f /a");
+    if(query[0])
+        system("del _response.json /q /f /a");
     
     return 1;
 }
@@ -251,6 +372,7 @@ int start_server(unsigned short port = HTTP_DEF_PORT)
     {
         closesocket(srv_soc);
         printf("[Web] Fail to bind, error = %d\n", WSAGetLastError());
+        puts("Please check if port 2333 is used by another application.");
         return -1; 
     }
 
@@ -258,7 +380,7 @@ int start_server(unsigned short port = HTTP_DEF_PORT)
     printf("[Web] The server is running on port 2333... ...\n");
     
     if(startBrowser){
-        char *command = "explorer.exe frontend\\index.html";
+        char *command = "explorer.exe http://localhost:2333/index.html";
         system(command);
     }
 
@@ -285,7 +407,6 @@ int start_server(unsigned short port = HTTP_DEF_PORT)
         recv_buf[recv_len] = 0;
         /* 向客户端发送响应数据 */
         result = http_send_response(acpt_soc, recv_buf, recv_len);
-        
         closesocket(acpt_soc);
     }
     outside_break:

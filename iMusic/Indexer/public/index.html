@@ -1,0 +1,138 @@
+<html>
+<head>
+<title>iMusic</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+<link rel="stylesheet" href="material.min.css">
+<script src="material.min.js"></script>
+<script src="jquery.min.js" type="text/javascript"></script>
+<script>
+
+$.ajaxSetup({
+    processData: false
+});
+function exec_query(){
+    var kw = $('#textbox').val();
+    if(!kw) return;
+    var url = 'http://localhost:2333/api?query='+kw;
+    $('#progress').show();
+    $('#errormsg').html("");
+    $.getJSON(url, function(data){
+        console.log(data);
+        $('#progress').hide();
+        render_result(data);
+    })
+    .error(function(){
+        $('#errormsg').html("查询失败。");
+        $('#progress').hide();
+    });
+}
+function render_result(data){
+
+    $('#tblData').html('');
+    $('#tblData').hide();
+        data.forEach(function(item){
+        var html='';
+        html += '<tr>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+item.title+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+item.composer+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+item.lyricist+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+'<a onclick=alert("'+(item.lyric).replace(/[\n ]/g,'\\n')+'");>点击查看</a>'+'</td>';
+        
+        html += '</tr>';
+        $('#tblData').append(html);                
+    
+    $('#tblData').fadeIn();
+    });
+    
+}
+function onkeydown_(event){
+    if(event.keyCode == 13)
+        exec_query();
+    return true;
+}
+</script>
+<style>
+.container{
+    padding: 20px;
+    max-width: 100%;
+}
+table{
+    width:100%;
+    max-width:100%;
+    table-layout: fixed;
+}
+td{
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+}
+span#errormsg{
+    margin-left: 2em;
+}
+#progress{
+    width:100%;
+}
+
+#result{
+    width:100%;
+}
+.prograss-container{
+    height:4px;
+    background-image: -webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,rgb(156,39,176),rgb(156,39,176));
+    background-image: linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,rgb(156,39,176),rgb(156,39,176)); 
+}
+</style>
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+
+        <label class="mdl-textfield__label" for="user-note">请输入关键字：</label>
+        <input class="mdl-textfield__input" id="textbox" type="text" onkeydown="return onkeydown_(event);"></input>
+    </div>
+         
+            
+            
+    <span class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="button" onclick="exec_query();">查询</span>
+    <span id="errormsg"></span>
+    <div class="prograss-container">
+        <div id="progress" class="mdl-progress mdl-js-progress mdl-progress__indeterminate" style="display:none;"></div>
+    </div>
+
+    
+    
+    <div id="result">
+    
+    
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">歌名</th>
+                <th class="mdl-data-table__cell--non-numeric">歌手</th>
+                <th class="mdl-data-table__cell--non-numeric">专辑</th>
+                <th class="mdl-data-table__cell--non-numeric">发行于</th>
+                <th class="mdl-data-table__cell--non-numeric">作词</th>
+                <th class="mdl-data-table__cell--non-numeric">作曲</th>
+                <th class="mdl-data-table__cell--non-numeric">歌词</th>
+
+            </tr>
+          </thead>
+          <tbody id="tblData">
+          </tbody>
+        </table>
+    
+    </div>
+
+</div> 
+
+</body>
+</html>
