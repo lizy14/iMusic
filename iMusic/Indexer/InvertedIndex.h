@@ -1,3 +1,13 @@
+/*
+文件名: InvertedIndex.h
+描　述: 倒排文档
+
+作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
+创建于: 
+
+环　境: Visual Studio 2012 (MSVC++ 11.0)
+*/
+
 #pragma once
 
 

@@ -1,3 +1,13 @@
+/*
+文件名: JSON.cpp
+描　述: 
+
+作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
+创建于: 
+
+环　境: Visual Studio 2012 (MSVC++ 11.0)
+*/
+
 #include "JSON.h"
 
 

@@ -1,3 +1,13 @@
+/*
+文件名: JSON.h
+描　述: a simple JSON Encoder
+
+作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
+创建于: 
+
+环　境: Visual Studio 2012 (MSVC++ 11.0)
+*/
+
 #pragma once
 
 #include "../Parser/SongInfo.h"
