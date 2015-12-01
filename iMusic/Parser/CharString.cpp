@@ -27,6 +27,12 @@ namespace Zhaoyang{
 			append(str[i]);
 		}
 	}
+    CharString::CharString(CharString& str):head(nullptr),len(0),capacity(0){
+        int oldLength = str.length();
+        for(int i=0; i<oldLength; i++){
+            append(str[i]);
+        }
+    }
 	CharString::~CharString(){
 		delete[] head;
 		return;

@@ -3,43 +3,72 @@
 
 #include <map>
 #include <vector>
-#include <set>
+
 #include <string>
 #include <algorithm>
 
+#include "BTree.h"
 #include "../Parser/CharString.h"
 #include "../Parser/List.h"
 #include "../Parser/SongInfo.h"
 #include "../Parser/Segmentation.h"
 namespace Zhaoyang{
-    class Document{
-    public:
-        SongInfo *p;
-        int count;
-    public:
-        Document():p(nullptr), count(0){}
-        Document(SongInfo* p_, int c_=0):p(p_), count(c_){}
-        operator SongInfo*(){
-            return p;
-        }
-        int getCount(){
-            return count;
-        }
 
-    };
 
-    bool operator<(Document x, Document y);
 
+    struct WeightedSong;
+    struct Statistics;
+    struct SongWithStatistics;
+    struct KeyWordData;
+    
 
     class InvertedIndex
     {
-        List<SongInfo> list;
-        std::map<CharString, std::set<Document> > map;
+        //储存所有歌曲信息。本类中的所有 `SongInfo*` 指针均指向其中。
+        List<SongInfo> songs;
+        //关键词词典
+        BTree<CharString, KeyWordData > keywords;
+        //分词器实例
         Segmentation *seg;
     public:
         InvertedIndex(void);
         ~InvertedIndex(void);
-        void add(SongInfo& song);
-        std::vector<SongInfo*> query(CharString str);
+        Segmentation* getSeg(){return seg;}
+        void insert(SongInfo& song);
+        std::vector<SongInfo*> query(CharStringList wordsInQuery);
+        void test();
+
+    };
+
+    //词典的节点
+    struct KeyWordData{
+        List<SongWithStatistics> list;
+        int numberOfSongs;
+        int numberOfAppearances;
+        KeyWordData():numberOfAppearances(0),numberOfSongs(0){}
+    };
+
+
+
+
+    //在歌曲上附加统计信息，每个歌曲随不同关键词而不同
+    struct Statistics{
+        int numberOfAppearencesInTitle;
+        int numberOfAppearencesInLyric;
+        Statistics():numberOfAppearencesInLyric(0),numberOfAppearencesInTitle(0){}
+    };
+    struct SongWithStatistics{
+        SongInfo *p;
+        Statistics s;
+        operator SongInfo*(){return p;}
+        SongWithStatistics(SongInfo* p_, Statistics s_):p(p_),s(s_){}
+        SongWithStatistics(SongInfo* p_=nullptr):p(p_){}
+    };
+
+    //歌曲带权，每个歌曲随不同检索而不同，仅在搜索排序时使用
+    struct WeightedSong{
+        SongInfo *p;
+        int weight;
+        WeightedSong(SongInfo* p_=nullptr, int c_=0):p(p_), weight(c_){}
     };
 }

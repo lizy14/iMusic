@@ -32,16 +32,43 @@ function render_result(data){
 
     $('#tblData').html('');
     $('#tblData').hide();
-        data.forEach(function(item){
+        data.result.forEach(function(item){
+        function highlight(str){
+            data.seg.forEach(function(word){
+                str = str.replace(new RegExp(word,"g"), '<b>'+word+'</b>');
+            });
+            return str;
+        }
+        function highlightLyric(str){
+        
+            return abst(highlight(str.replace(/\\n/g, ' ')));
+        }
+        function abst(str){
+            var reg;
+            reg = /<\/b>([^<.]*?) ([^<.]{3,}) ([^<.]*?)<b>/;
+            while(str.match(reg)){
+                str = str.replace(reg, function(match,p1,p2,p3){
+                    return '</b>'+p1 + '...' + p3 + '<b>'}
+                );
+            }
+            str = str.replace(/^([^<.]{3,}) ([^<.]*?)<b>/, function(match,p1,p2){
+                return p2 + '<b>'}
+            );
+
+            str = str.replace(/<\/b>([^<.]*?) ([^<.]{3,})/, function(match,p1,p2){
+                return '</b>' + p1}
+            );
+            return str;
+        }
+        item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
+        
         var html='';
         html += '<tr>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.title+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+highlight(item.title)+'</td>';
         html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
         html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
         html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.composer+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.lyricist+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+'<a onclick=alert("'+(item.lyric).replace(/[\n ]/g,'\\n')+'");>点击查看</a>'+'</td>';
+        html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+highlightLyric(item.lyric)+'</span>'+'</td>';
         
         html += '</tr>';
         $('#tblData').append(html);                
@@ -57,14 +84,18 @@ function onkeydown_(event){
 }
 </script>
 <style>
+b{
+     rgb(202, 53, 181);
+}
 .container{
     padding: 20px;
     max-width: 100%;
+    
 }
 table{
     width:100%;
     max-width:100%;
-    table-layout: fixed;
+    /*table-layout: fixed;*/
 }
 td{
     overflow: hidden;
@@ -79,7 +110,8 @@ span#errormsg{
 }
 
 #result{
-    width:100%;
+    max-width:100%;
+    overflow: hidden;
 }
 .prograss-container{
     height:4px;
@@ -120,9 +152,7 @@ span#errormsg{
                 <th class="mdl-data-table__cell--non-numeric">歌手</th>
                 <th class="mdl-data-table__cell--non-numeric">专辑</th>
                 <th class="mdl-data-table__cell--non-numeric">发行于</th>
-                <th class="mdl-data-table__cell--non-numeric">作词</th>
-                <th class="mdl-data-table__cell--non-numeric">作曲</th>
-                <th class="mdl-data-table__cell--non-numeric">歌词</th>
+                <th class="mdl-data-table__cell--non-numeric">歌词 (点击查看全部)</th>
 
             </tr>
           </thead>

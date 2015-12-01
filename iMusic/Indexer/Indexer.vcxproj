@@ -94,6 +94,7 @@
     <ClInclude Include="..\Parser\Segmentation.h" />
     <ClInclude Include="..\Parser\SongInfo.h" />
     <ClInclude Include="..\Parser\Stack.h" />
+    <ClInclude Include="BTree.h" />
     <ClInclude Include="InvertedIndex.h" />
     <ClInclude Include="JSON.h" />
     <ClInclude Include="WebServer.h" />

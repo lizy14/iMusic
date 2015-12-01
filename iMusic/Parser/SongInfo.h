@@ -14,6 +14,7 @@
 namespace Zhaoyang{
 	class SongInfo{
 	public:
+		
 		//文本字段
 		CharString title;   //音乐名称
 		CharString singer;  //歌手名称
@@ -22,6 +23,8 @@ namespace Zhaoyang{
 		CharString composer;//作词
 		CharString lyricist;//作曲
 		CharString lyric;   //歌词
+
+		CharString origin;  //来源（`/\d+.html/`）
 	};
 
 }

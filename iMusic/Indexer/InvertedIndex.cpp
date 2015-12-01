@@ -14,62 +14,80 @@ InvertedIndex::~InvertedIndex(void)
     delete seg;
 }
 
-void InvertedIndex::add(SongInfo& song){
-    list.push(song);
+void InvertedIndex::insert(SongInfo& song){
+    songs.push(song);
 
 
-    SongInfo* pSong = &list.tail->data;
+    SongInfo* pSong = &songs.tail->data;
 
     CharStringList wordsInTitle = seg->exec(song.title);
     for(int i=0; i<wordsInTitle.length; i++){
-        Document doc(pSong);
-        auto& listOfCurrentKeyword = map[wordsInTitle[i]];
-        auto existing = listOfCurrentKeyword.find(doc);
-        if(existing != listOfCurrentKeyword.end()){
-            doc.count = (*existing).count + 1;
-            listOfCurrentKeyword.erase(existing);
+        Statistics s;
+        keywords[wordsInTitle[i]].numberOfAppearances ++;
+        auto& songsWithThisWord = keywords[wordsInTitle[i]].list;
+        auto *existing = songsWithThisWord.find(pSong);
+        if(existing){
+            s = existing->s;   
+            s.numberOfAppearencesInTitle +=1;
+            songsWithThisWord.find(pSong)->s = s;
+        }else{
+            s.numberOfAppearencesInTitle +=1;// =1;
+            songsWithThisWord.push(SongWithStatistics(pSong, s));
         }
-        listOfCurrentKeyword.insert(doc);
+        
     }
 
     CharStringList wordsInLyric = seg->exec(song.lyric);
     for(int i=0; i<wordsInLyric.length; i++){
-        Document doc(pSong);
-        auto& listOfCurrentKeyword = map[wordsInLyric[i]];
-        auto existing = listOfCurrentKeyword.find(doc);
-        if(existing != listOfCurrentKeyword.end()){
-            doc.count = (*existing).count + 1;
-            listOfCurrentKeyword.erase(existing);
+        Statistics s;
+        CharString& word = wordsInLyric[i];
+
+        keywords[wordsInLyric[i]].numberOfAppearances ++;
+        auto& songsWithThisWord = keywords[wordsInLyric[i]].list;
+        auto *existing = songsWithThisWord.find(pSong);
+        if(existing){
+            s = existing->s;   
+            s.numberOfAppearencesInLyric +=1;
+            songsWithThisWord.find(pSong)->s = s;
+        }else{
+            s.numberOfAppearencesInLyric +=1;// =1;
+            songsWithThisWord.push(SongWithStatistics(pSong, s));
         }
-        listOfCurrentKeyword.insert(doc);
     }
 }
 
-std::vector<SongInfo*> InvertedIndex::query(CharString str){
+std::vector<SongInfo*> InvertedIndex::query(CharStringList wordsInQuery){
     //检索结果集
-    std::set<SongInfo*> songs;
+    std::map<SongInfo*, bool> songs;
 
     //每一检索结果的权 := 对查询串中各词的权之和
     std::map<SongInfo*, int> songsWeight;
-    std::vector<Document> vSongs;
 
-    CharStringList wordsInQuery = seg->exec(str);
+
+    
+     
 
     for(int i=0; i<wordsInQuery.length; i++){
-        for(auto& i : map[wordsInQuery[i]]){
-            songs.insert(i.p);
-            songsWeight[i.p] += i.count;
+        auto& keywordInfo = keywords[wordsInQuery[i]];
+        auto& listOfDocuments = keywordInfo.list;
+        for(int i=0; i<listOfDocuments.length; i++){
+            songs[listOfDocuments[i].p] = true;
+            songsWeight[listOfDocuments[i].p] +=
+                10 * (listOfDocuments[i].s.numberOfAppearencesInTitle)
+                + (listOfDocuments[i].s.numberOfAppearencesInLyric);
         }
     }
-    
-    for(auto& i: songs)
-        vSongs.push_back(Document(i, songsWeight[i]));
 
-    std::sort(vSongs.begin(), vSongs.end(), [](Document a, Document b){
-        return a.count > b.count;
+    //下面根据权进行排序
+    std::vector<WeightedSong> vSongs;
+    for(auto& i: songs)
+        vSongs.push_back(WeightedSong(i.first, songsWeight[i.first]));
+
+    std::sort(vSongs.begin(), vSongs.end(), [](WeightedSong a, WeightedSong b){
+        return a.weight > b.weight;
     });
 
-    //去除新生成的权信息，以返回结果
+    //剥除权信息，以返回结果
     std::vector<SongInfo*> vSongsRet;
     for(auto& i: vSongs){
         vSongsRet.push_back(i.p);
@@ -78,10 +96,9 @@ std::vector<SongInfo*> InvertedIndex::query(CharString str){
     return vSongsRet;
 }
 
-inline bool operator<(Document x, Document y){
-    return x.p < y.p;
+void InvertedIndex::test(){
+    
 }
-
 
 }
 

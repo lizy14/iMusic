@@ -65,8 +65,8 @@ namespace Zhaoyang{
 		}
 		int lastQueryIndex;
 		Item<T> *lastQueryPointer;
-		T operator[](int index){
-			//TODO: 保存上一次下标查询的结果
+		T& operator[](int index){
+			//保存上一次下标查询的结果
 			//这样一来，使用下标遍历链表只需线性时间
 			int i;
 			Item<T> *p;
@@ -94,6 +94,15 @@ namespace Zhaoyang{
 			}while(p != nullptr);
 			throw "Index out of range";
 		}
+        T* find(T t){
+            lastQueryPointer = nullptr;
+            for(int i=0; i<length; i++){
+                if(operator[](i) == t)
+                    return &(operator[](i));
+            }
+            return nullptr;
+        }
+
 	};
 
 }

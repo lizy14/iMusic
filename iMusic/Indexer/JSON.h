@@ -12,6 +12,7 @@ namespace Zhaoyang{
 
     string JSON(SongInfo song);
 
+    string JSON(string str);
 
     template <class T>
     string JSON(List<T> list){

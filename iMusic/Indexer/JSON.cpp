@@ -2,6 +2,7 @@
 
 
 namespace Zhaoyang{
+    string JSON(string str){return string("\"")+str+string("\"");}
     string JSON(SongInfo song){
         stringstream ss;
         ss << "{";

@@ -1,11 +1,11 @@
 /*
-ÎÄ¼þÃû: 
-Ãè¡¡Êö: GUI Èë¿Úµã
+æ–‡ä»¶å: 
+æã€€è¿°: å…¥å£ç‚¹
 
-×÷¡¡Õß: ÀîÕØÑô, Çå»ª´óÑ§Èí¼þÑ§Ôº, lizy14@yeah.net
-´´½¨ÓÚ: 2015-11-30
+ä½œã€€è€…: æŽè‚‡é˜³, æ¸…åŽå¤§å­¦è½¯ä»¶å­¦é™¢, lizy14@yeah.net
+åˆ›å»ºäºŽ: 2015-11-30
 
-»·¡¡¾³: Visual Studio 2012 (MSVC++ 11.0)
+çŽ¯ã€€å¢ƒ: Visual Studio 2012 (MSVC++ 11.0)
 */
 
 #include "WebServer.h"
@@ -19,16 +19,20 @@ using namespace Zhaoyang;
 InvertedIndex index;
 
 void queryApiHandler(ostream& os, string& query){
-    auto result = index.query(query);
+
+    CharStringList wordsInQuery = index.getSeg()->exec(query);
+    auto result = index.query(wordsInQuery);
     std::vector<SongInfo> result_;
     for(auto i: result)
         result_.push_back(*i);
-    string json = JSON(result_);
+
+    string json = "{\"seg\":" + JSON(wordsInQuery) + ",\"result\":" + JSON(result_) + "}";
+
     for(char i : json){
         if(i=='\n')
             os << '\\' << 'n';
         else if(i != '\r')
-            os << i; 
+            os << i;
     }
 }
 int loadAllSongs(){
@@ -45,14 +49,20 @@ int loadAllSongs(){
 
         Parser parser(content);
         SongInfo song = parser.getSongInfo();
-        
-        index.add(song);
+        song.origin = filename;
+
+        index.insert(song);
 
     }
     return 0;
+
 }
 
+
+
 int main(){
+    
     loadAllSongs();
+
     startServer(queryApiHandler, false);
 }
