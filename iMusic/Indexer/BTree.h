@@ -204,7 +204,7 @@ namespace Zhaoyang{
                         break;
                 }
 
-                if(traceback){
+                if(traceback && cursors.top().index != -1){
                     //go deep again
                     cursors.top().index ++;
                     auto p = cursors.top().node->children[cursors.top().index];
@@ -231,6 +231,8 @@ namespace Zhaoyang{
                 }
             }
             Pair operator*(){
+                cout << cursors.top().node->data[0].key << endl;
+                cout << cursors.top().index << endl;
                 return Pair(cursors.top().getPair());
             }
             bool operator!=(BTreeIterator it){
