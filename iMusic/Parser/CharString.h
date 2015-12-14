@@ -52,6 +52,9 @@ namespace Zhaoyang{
 		}
 
 		bool operator<(const CharString& str1) const;
+		bool operator>(const CharString& str1) const{
+			return str1 < *this;
+		}
 	};
 	std::ostream& operator<< (std::ostream& os, const CharString& str);
 	
