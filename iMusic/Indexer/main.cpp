@@ -1,6 +1,6 @@
 /*
 文件名: 
-描　述: 入口点
+描　述: 实验二的入口点
 
 作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
 创建于: 2015-11-30
@@ -11,17 +11,15 @@
 #include "WebServer.h"
 #include "../Parser/IO.h"
 #include "JSON.h"
-
+#include "TestII.h"
 #include "InvertedIndex.h"
 using namespace Zhaoyang;
 
-
-InvertedIndex index;
-
+InvertedIndex *index;
 void queryApiHandler(ostream& os, string& query){
 
-    CharStringList wordsInQuery = index.getSeg()->exec(query);
-    auto result = index.query(wordsInQuery);
+    CharStringList wordsInQuery = index->getSeg()->exec(query);
+    auto result = index->query(wordsInQuery);
     std::vector<SongInfo> result_;
     for(auto i: result)
         result_.push_back(*i);
@@ -51,7 +49,7 @@ int loadAllSongs(){
         SongInfo song = parser.getSongInfo();
         song.origin = filename;
 
-        index.insert(song);
+        index->insert(song);
 
     }
     return 0;
@@ -61,8 +59,15 @@ int loadAllSongs(){
 
 
 int main(){
-    
+    TestII test;
+    return test.testBTree(), system("pause");
+
+    index = new InvertedIndex();
+
     loadAllSongs();
 
     startServer(queryApiHandler, false);
+
+    delete index;
+    return 0;
 }
