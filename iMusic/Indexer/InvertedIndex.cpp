@@ -33,6 +33,8 @@ void InvertedIndex::insert(SongInfo& song){
     CharStringList wordsInTitle = seg->exec(song.title);
     for(int i=0; i<wordsInTitle.length; i++){
         Statistics s;
+        
+
         keywords[wordsInTitle[i]].numberOfAppearances ++;
         auto& songsWithThisWord = keywords[wordsInTitle[i]].list;
         auto *existing = songsWithThisWord.find(pSong);
@@ -51,6 +53,8 @@ void InvertedIndex::insert(SongInfo& song){
     for(int i=0; i<wordsInLyric.length; i++){
         Statistics s;
         CharString& word = wordsInLyric[i];
+        
+
 
         keywords[wordsInLyric[i]].numberOfAppearances ++;
         auto& songsWithThisWord = keywords[wordsInLyric[i]].list;

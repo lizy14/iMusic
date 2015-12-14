@@ -11,7 +11,7 @@
 #include "WebServer.h"
 #include "../Parser/IO.h"
 #include "JSON.h"
-#include "TestII.h"
+
 #include "InvertedIndex.h"
 using namespace Zhaoyang;
 
@@ -59,12 +59,11 @@ int loadAllSongs(){
 
 
 int main(){
-    TestII test;
-    return test.testBTree(), system("pause");
-
+    system("printDateAndTime");
     index = new InvertedIndex();
 
     loadAllSongs();
+    system("printDateAndTime");
 
     startServer(queryApiHandler, false);
 

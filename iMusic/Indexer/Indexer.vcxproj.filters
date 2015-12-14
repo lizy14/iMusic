@@ -39,9 +39,6 @@
     <ClCompile Include="InvertedIndex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestII.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Parser\CharString.h">
@@ -78,9 +75,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestII.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

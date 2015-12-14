@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <map>
 
 #include "BTree.h"
 #include "../Parser/CharString.h"

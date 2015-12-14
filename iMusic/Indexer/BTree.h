@@ -3,127 +3,168 @@
 描　述: B-树，模板类
 
 作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
-创建于: 2015-12-01
+创建于: 2015-12-14
 
 环　境: Visual Studio 2012 (MSVC++ 11.0)
 */
 
 #pragma once
 
+#include <vector>
 
-                                                                                                                                                                                                                                                    #include <map>
 namespace Zhaoyang{
+
     template<class KeyType, class ValueType>
     class BTree{
-        class BTNode;
+        static const int t = 2; //minimum degree, >= 2
         
-        static const int m = 4;
-        static const int NOT_FOUND = -1;
-                                                                                                                                                                                                                                                            std::map<KeyType, ValueType> map;
         struct Pair{
             KeyType key;
             ValueType value;
+            Pair(KeyType _, ValueType __):key(_), value(__){}
             Pair(){}
-            Pair(KeyType key_):key(key_){}
         };
-        class SearchResult{
-        public:
-            BTNode *pt;
-            int i;
-            bool flag; //true for successful
-            SearchResult(BTNode *pt_, int i_, bool flag_):flag(flag_),pt(pt_),i(i_){}
-        };
-        BTNode *root;
 
+        class Node{
+            int n; //number of keys in this node, <= 2t-1
+            std::vector<Pair> data; //size == n
+            std::vector<Node*> children; //size == n+1
+            bool isLeaf;
+
+            void makeNonLeaf(bool __ = true){
+                
+                if(children.size() == 0){
+                    data.resize(2*t-1);
+                    children.resize(2*t);
+                    if(__)
+                        for(int i=0; i<children.size(); i++)
+                            children[i] = new Node(true, false);
+                }
+            }
+            Node(bool _, bool __ = true):isLeaf(_), n(0){
+                data.resize(2*t-1);
+                children.resize(2*t);
+                if(__)
+                    makeNonLeaf(false);
+            }
+            friend class BTree;
+        };
+
+        Node *root;
+
+        struct SearchResult{
+            bool success;
+            Node* node;
+            int index;
+            SearchResult(bool _, Node* __, int ___):success(_), node(__), index(___){}
+        };
+
+    private:
+
+
+        SearchResult search(Node* x, KeyType& k){
+            int i=1;
+            if(x->n == 0)
+                return SearchResult(false, x, i);
+            while(i <= x->n && k > x->data[i-1].key)
+                i++;
+
+            if(i <= x->n && k == x->data[i-1].key)
+                return SearchResult(true, x, i-1);
+
+            if(x->isLeaf)
+                return SearchResult(false, x, i-1);
+
+            return search(x->children[i-1], k);
+
+        }
+
+        /*
+        `x`: an nonfull internal node
+        `i`: the index of a full child node of x
+        */
+        void splitChild(Node* x, int i){
+            auto y = x->children[i-1];
+            if(!y->isLeaf)
+                y->makeNonLeaf();
+            auto z = new Node(y->isLeaf);
+
+            z->n = t - 1;
+            for(int j=1; j<=t-1; j++)
+                z->data[j-1] = y->data[j+t-1];
+
+            if(!y->isLeaf)
+                for(int j=1; j<=t; j++)
+                    z->children[j-1] = y->children[j+t-1];
+
+            y->n = t - 1;
+            for(int j=x->n + 1; j>=i + 1; j--)
+                x->children[j+1 -1] = x->children[j -1];
+            x->children[i] = z;
+            
+            for(int j=x->n; j>=i; j--)
+                x->data[j+1 -1] = x->data[j-1];
+            x->data[i-1] = y->data[t-1];
+            x->n ++;
+        }
+
+        void insert_nonfull(Node* x, KeyType& k, ValueType& v){
+            auto i = x->n;
+            if(x->isLeaf){
+                while(i>=1 && k < x->data[i-1].key){
+                    x->data[i] = x->data[i-1];
+                    i--;
+                }
+                x->data[i] = Pair(k, v);
+                x->n ++;
+            }else{
+                while(i>=1 && k < x->data[i-1].key){
+                    i--;
+                }
+                i++;
+                if(x->children[i-1]->n == 2*t-1){
+                    splitChild(x, i);
+                    if(k > x->data[i-1].key)
+                        i++;
+                }
+                insert_nonfull(x->children[i-1], k, v);
+
+            }
+        }
+
+        void insert(KeyType& k, ValueType& v){
+            auto r = root;
+            if(r->n == 2*t-1){
+
+                auto s = new Node(false);
+                root = s;
+                s->children[1-1] = r;
+                splitChild(s, 1);
+                insert_nonfull(s, k, v);
+            }
+            else
+                insert_nonfull(r, k, v);
+        }
     public:
-        BTree():root(nullptr){
-
+        BTree(){
+            root = new Node(true);
         }
         ~BTree(){
-
-        }
-    private:
-        int searchInNode(BTNode *node, KeyType K){
             //TODO
-            return NOT_FOUND;
         }
-        SearchResult searchInTree(BTNode *node, KeyType K){
-            BTNode *p = node, *q = nullptr;
-            bool found = false;
-            int i = NOT_FOUND;
-            while(p && !found){
-                i = searchInNode(p, K);
-                if(i != NOT_FOUND){
-                    found = true;
-                }else{
-                    q=p; p=p->ptr[i];
-                }
-            }
-            if(found)
-                return SearchResult(p, i, true);
-            else
-                return SearchResult(q, i, false);
-        }
-        int insertIntoNode(BTNode *q, int i, KeyType x, BTNode *ap){
-            q->keynum += 1;
-            for(int j=m; j>i; j++){
-                q->ptr[j] = q->ptr[j-1];
-                q->data[j] = q->data[j-1];
-            }
-            q->ptr[i+1] = ap;
-            q->data[i+1].key = x;
-            return 0;
-        }
-        int splitNode(BTNode *q, int s, BTNode *&ap){
-            ap = new BTNode();
-            //TODO
-            return 0;            
-        }
-        int insertIntoTree(BTNode *&T, KeyType K, BTNode *q, int i){
-            bool finished = false;
-            BTNode *ap = nullptr;
-            KeyType x = K;
-            while(q && !finished){
-                insertIntoNode(q, i, x, ap);
-                if(q->keynum < m)
-                    finished = true;
-                else{
-                    int s = (m+1)/2; //upper
-                    splitNode(q, s, ap);
-                    x = q->data[i].key;
-                    q = q->parent;
-                    if(q)
-                        i = searchInNode(q, x);
-                }
-            }
-            if(!finished){
-                //TODO
-            }
-            return 0;
-        }
+        ValueType& operator[](KeyType key){
 
-    public:
-        ValueType& operator[](KeyType key){                                                                                                                                                                                                                                                                                                     return map[key];
-            auto r = searchInTree(root, key);
-
-            if(r.flag)
-                return (*r.pt).data[r.i].value;
-            
-            insertIntoTree(root, key, r.pt, r.i);
-            r = searchInTree(root, key);
-            return (*r.pt).data[r.i].value;
+            auto find = search(root, key);
+            if(find.success)
+                return find.node->data[find.index].value;
+            else{
+                auto newVal = ValueType();
+                insert(key, newVal);
+                auto find = search(root, key);
+                if(!find.success)
+                    throw "BTree internal error";
+                return find.node->data[find.index].value;
+            }
         }
-
-
-        //节点结构
-        class BTNode {
-        public:
-            int keynum;
-            BTNode *parent;
-            BTNode* ptr[m+1];  //array of, subscript starting from 1
-            Pair data[m+1];    //array of, subscript starting from 1
-        public:
-            BTNode():keynum(0),parent(nullptr){}
-        };
     };
 }
