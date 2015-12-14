@@ -19,52 +19,13 @@ using namespace std;
 using namespace Zhaoyang;
 int main(){
     BTree<int, double> tr;
-        for(int i=0; i<10; i++){
+    for(int i=0; i<5; i++){
         tr[i] = i + .233;
     }
-    for(auto& i : tr)
-        cout << i.key << " => " << i.value << endl;
 
-    auto begin = tr.begin();
-    auto end = tr.end();
-    auto it = begin;
-    while(1){
-        if(!(it != end))
-            break;
-
-        cout << (*it).key << " => " << (*it).value << endl;
-        
-        it++;
-    }
-    for(auto& i : tr)
-        cout << i.key << " => " << i.value << endl;
-    
-    return 0;
-
-    BTree<CharString, int> t;
-   
-    auto pugongying = CharString("蒲公英");
-    t[pugongying] = 233;
-    cout << t[pugongying] << endl;
-    t[CharString("的")] = 88;
-    cout << t[pugongying] << endl;
-    t[CharString("约定")] = 88;
-    cout << t[pugongying] << endl;
-    t[CharString("小学")] = 88; 
-    cout << t[pugongying] << endl;
-    t[CharString("篱笆")] = 88;
-    cout << t[pugongying] << endl;
-    t[CharString("旁")] = 88;
-    cout << t[pugongying] << endl;
-    t[CharString("的")] = 88;
-    cout << t[pugongying] << endl;
-    t[pugongying] = 88;
-    cout << t[pugongying] << endl;
-    t[CharString("是")] = 88;
-    t[CharString("记忆")] = 88;
-    t[CharString("里")] = 88;
-    t[CharString("有")] = 88;
-    t[CharString("味道")] = 88;
+    tr.travel([](BTree<int, double>::Pair p){
+        cout << p.key << " => " << p.value << endl;
+    });
 
     return system("pause");
 }

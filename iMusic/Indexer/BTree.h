@@ -22,14 +22,14 @@ namespace Zhaoyang{
     template<class KeyType, class ValueType>
     class BTree{
         static const int t = 2; //minimum degree, >= 2
-        
+    public:
         struct Pair{
             KeyType key;
             ValueType value;
             Pair(KeyType _, ValueType __):key(_), value(__){}
             Pair(){}
         };
-
+    private:
         class Node{
             int n; //number of keys in this node, <= 2t-1
             std::vector<Pair> data; //size == n
@@ -65,7 +65,16 @@ namespace Zhaoyang{
         };
 
     private:
-
+        void travel_(Node* node, void(*visit)(Pair p)){
+            if(!node)
+                return;
+            int i;
+            for(i=0; i<node->n; i++){
+                travel_(node->children[i], visit);
+                (*visit)(node->data[i]);
+            }
+            travel_(node->children[i], visit);
+        }
 
         SearchResult search(Node* x, KeyType& k){
             int i=1;
@@ -157,6 +166,10 @@ namespace Zhaoyang{
         ~BTree(){
             //TODO
         }
+
+        void travel(void(*visit)(Pair p)){
+            travel_(root, visit);
+        }
         ValueType& operator[](KeyType key){
 
             auto find = search(root, key);
@@ -171,104 +184,5 @@ namespace Zhaoyang{
                 return find.node->data[find.index].value;
             }
         }
-
-    public:
-        class BTreeIterator{
-            friend class BTree;
-            BTree* tree;
-            struct Cursor{
-                Node* node;
-                int index; // -1 means "i am new here, seeing children"
-                Pair getPair(){
-                    return node->data[index];
-                }
-            };
-            std::stack<Cursor> cursors;
-            bool done;
-        public:
-            void operator++(){
-                cursors.top().index ++;
-                bool traceback = false;
-                //back trace
-                while(1){
-                    auto top = cursors.top();
-                    if(top.index >= top.node->n){
-                        traceback = true;
-                        cursors.pop();
-                        if(cursors.empty()){
-                            done = true;
-                            return;
-                        }
-                        cursors.top().index ++;
-                    }else
-                        break;
-                }
-
-                if(traceback && cursors.top().index != -1){
-                    //go deep again
-                    cursors.top().index ++;
-                    auto p = cursors.top().node->children[cursors.top().index];
-                    do{
-                        BTreeIterator::Cursor cursor;
-                        cursor.node = p;
-                        cursor.index = -1;
-                        if(!cursor.node)
-                            break;
-                        cursors.push(cursor);
-                        if(!p || p->isLeaf)
-                            break;
-                        p = p->children[0];
-                        if(!p)
-                            break;
-                    }while(1);
-                }
-                    
-
-                auto& top = cursors.top();
-                if(top.index == -1){
-                    top.index ++;
-                    return;
-                }
-            }
-            Pair operator*(){
-                cout << cursors.top().node->data[0].key << endl;
-                cout << cursors.top().index << endl;
-                return Pair(cursors.top().getPair());
-            }
-            bool operator!=(BTreeIterator it){
-                if(done && it.done)
-                    return false;
-                //TODO
-                return true;
-            }
-        };
-        BTreeIterator begin(){
-            BTreeIterator it;
-            it.tree = this;
-            it.done = false;
-            Node* p = root;
-
-            //go as deep as possible, finding the smallest keyword
-            do{
-                BTreeIterator::Cursor cursor;
-                cursor.node = p;
-                cursor.index = -1;
-                it.cursors.push(cursor);
-                if(p->isLeaf){
-                    it.cursors.top().index ++;
-                    break;
-                }
-                p = p->children[0];
-            }while(1);
-
-            return it;
-        }
-        BTreeIterator end(){
-            BTreeIterator it;
-            it.tree = this;
-            it.done = true;
-            return it;
-        }
     };
-
 }
