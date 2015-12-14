@@ -1,6 +1,10 @@
 /*
 文件名: BTree.h
-描　述: B-树，模板类
+描　述: B-树，模板类，
+　　　  保存 key-value 对，等效于 std::map<>，
+　　　  对外提供 operator[] 和 STL 风格迭代器
+
+　　　  参考书目：《算法导论》第三版
 
 作　者: 李肇阳, 清华大学软件学院, lizy14@yeah.net
 创建于: 2015-12-14
@@ -11,9 +15,10 @@
 #pragma once
 
 #include <vector>
+#include <stack>
 
 namespace Zhaoyang{
-
+    
     template<class KeyType, class ValueType>
     class BTree{
         static const int t = 2; //minimum degree, >= 2
@@ -166,5 +171,102 @@ namespace Zhaoyang{
                 return find.node->data[find.index].value;
             }
         }
+
+    public:
+        class BTreeIterator{
+            friend class BTree;
+            BTree* tree;
+            struct Cursor{
+                Node* node;
+                int index; // -1 means "i am new here, seeing children"
+                Pair getPair(){
+                    return node->data[index];
+                }
+            };
+            std::stack<Cursor> cursors;
+            bool done;
+        public:
+            void operator++(){
+                cursors.top().index ++;
+                bool traceback = false;
+                //back trace
+                while(1){
+                    auto top = cursors.top();
+                    if(top.index >= top.node->n){
+                        traceback = true;
+                        cursors.pop();
+                        if(cursors.empty()){
+                            done = true;
+                            return;
+                        }
+                        cursors.top().index ++;
+                    }else
+                        break;
+                }
+
+                if(traceback){
+                    //go deep again
+                    cursors.top().index ++;
+                    auto p = cursors.top().node->children[cursors.top().index];
+                    do{
+                        BTreeIterator::Cursor cursor;
+                        cursor.node = p;
+                        cursor.index = -1;
+                        if(!cursor.node)
+                            break;
+                        cursors.push(cursor);
+                        if(!p || p->isLeaf)
+                            break;
+                        p = p->children[0];
+                        if(!p)
+                            break;
+                    }while(1);
+                }
+                    
+
+                auto& top = cursors.top();
+                if(top.index == -1){
+                    top.index ++;
+                    return;
+                }
+            }
+            Pair operator*(){
+                return Pair(cursors.top().getPair());
+            }
+            bool operator!=(BTreeIterator it){
+                if(done && it.done)
+                    return false;
+                //TODO
+                return true;
+            }
+        };
+        BTreeIterator begin(){
+            BTreeIterator it;
+            it.tree = this;
+            it.done = false;
+            Node* p = root;
+
+            //go as deep as possible, finding the smallest keyword
+            do{
+                BTreeIterator::Cursor cursor;
+                cursor.node = p;
+                cursor.index = -1;
+                it.cursors.push(cursor);
+                if(p->isLeaf){
+                    it.cursors.top().index ++;
+                    break;
+                }
+                p = p->children[0];
+            }while(1);
+
+            return it;
+        }
+        BTreeIterator end(){
+            BTreeIterator it;
+            it.tree = this;
+            it.done = true;
+            return it;
+        }
     };
+
 }
