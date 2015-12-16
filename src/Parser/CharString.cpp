@@ -1,11 +1,11 @@
 /*
-ÎÄ¼şÃû: CharString.cpp
-Ãè¡¡Êö: ×Ö·û´®ÀàµÄÊµÏÖ
+æ–‡ä»¶å: CharString.cpp
+æã€€è¿°: å­—ç¬¦ä¸²ç±»çš„å®ç°
 
-×÷¡¡Õß: ÀîÕØÑô, Çå»ª´óÑ§Èí¼şÑ§Ôº, lizy14@yeah.net
-´´½¨ÓÚ: 2015-10-16
+ä½œã€€è€…: æè‚‡é˜³, æ¸…åå¤§å­¦è½¯ä»¶å­¦é™¢, lizy14@yeah.net
+åˆ›å»ºäº: 2015-10-16
 
-»·¡¡¾³: Visual Studio 2012 (MSVC++ 11.0)
+ç¯ã€€å¢ƒ: Visual Studio 2012 (MSVC++ 11.0)
 */
 
 #include "CharString.h"
@@ -163,7 +163,7 @@ namespace Zhaoyang{
 		int len = str1.length();
 		if(len!=str2.length())
 			return false;
-		for(int i=1; i<len; i++){
+		for(int i=0; i<len; i++){
 			if(str1[i] != str2[i])
 				return false;
 		}
