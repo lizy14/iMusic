@@ -13,6 +13,7 @@ $.ajaxSetup({
     processData: false
 });
 function exec_query_(kw){
+    $('#textbox').val(kw);
     var url = 'http://localhost:2333/api?query='+kw;
     $('#progress').show();
     $('#errormsg').html("");
@@ -32,21 +33,33 @@ function exec_query(){
     exec_query_(kw);
 }
 function render_result(data){
-
+    data.seg.sort(function(a, b){
+        if(a.length < b.length)
+            return 1;
+        if(a.length > b.length)
+            return -1;
+        return (a<b? 1: (a>b? -1: 0));
+    })
     $('#tblData').html('');
     $('#tblData').hide();
+    function highlightAndAddLink(str){
+        return '<a onclick="exec_query_(\''+ str + '\')">'+highlight(str)+'</a>';
+    }
     function addLink(str){
-        return str;
+        return '<a onclick="exec_query_(\''+ str + '\')">'+(str)+'</a>';
     }
     function highlight(str){
         data.seg.forEach(function(word){
             str = str.replace(new RegExp(word,"g"), '<b>'+word+'</b>');
         });
+        console.log(str);
         return str;
     }
     function highlightLyric(str){
-    
-        return abst(highlight(str.replace(/\\n/g, ' ')));
+        return abst(highlight(unescapeLyric(str)));
+    }
+    function unescapeLyric(str){
+        return str.replace(/\\n/g, ' ');
     }
     function abst(str){
         var reg;
@@ -66,41 +79,49 @@ function render_result(data){
         return str;
     }
     var flag = false;
-    data.recommend.forEach(function(item){
-        if(!flag){
-            flag = true;
-            return;
-        }
-        item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
-        
-        var html='';
-        html += '<tr class="recomm">';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+highlight(addLink(item.title))+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+highlightLyric(item.lyric)+'</span>'+'</td>';
-        
-        html += '</tr>';
-        $('#tblData').append(html);                
-    });
     
-    data.result.forEach(function(item){
+    if(data.recommend && $('#textbox').val().length > (data.recommend[0].title.length/2)){
+        $('#tblData').append('<tr class="recomm"><td colspan="5" class="mdl-data-table__cell--non-numeric">以下是歌曲《<a><b>'+data.recommend[0].title + '</b></a>》的推荐列表：</td></tr>');
+    
+        data.recommend.forEach(function(item){
+            if(!flag){
+                flag = true;
+                return;
+            }
+            item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
+            
+            var html='';
+            html += '<tr class="recomm">';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+(addLink(item.title))+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+unescapeLyric(item.lyric)+'</span>'+'</td>';
+            
+            html += '</tr>';
+            $('#tblData').append(html);                
+        });
+    }
+    
+    if(data.result){
+        $('#tblData').append('<tr><td colspan="5" class="mdl-data-table__cell--non-numeric">以下是关键词 '+data.seg.map(function(i){return '<a><b>'+i+'</b></a>'}).join('、') + ' 的检索结果：</td></tr>');
+    
+        data.result.forEach(function(item){
 
-        item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
-        
-        var html='';
-        html += '<tr>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+highlight(addLink(item.title))+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
-        html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+highlightLyric(item.lyric)+'</span>'+'</td>';
-        
-        html += '</tr>';
-        $('#tblData').append(html);                
-    });
-    
+            item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
+            
+            var html='';
+            html += '<tr>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+(highlightAndAddLink(item.title))+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+highlightLyric(item.lyric)+'</span>'+'</td>';
+            
+            html += '</tr>';
+            $('#tblData').append(html);                
+        });
+    }
 
     $('#tblData').fadeIn();
 }
@@ -158,7 +179,7 @@ tr.recomm{
 
     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 
-        <label class="mdl-textfield__label" for="user-note">请输入关键字：</label>
+        <label class="mdl-textfield__label" for="user-note">请输入关键字或歌曲名：</label>
         <input class="mdl-textfield__input" id="textbox" type="text" onkeydown="return onkeydown_(event);"></input>
     </div>
          
@@ -178,11 +199,11 @@ tr.recomm{
         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
           <thead>
             <tr>
-                <th class="mdl-data-table__cell--non-numeric">歌名</th>
+                <th class="mdl-data-table__cell--non-numeric">歌名 (点击查看推荐)</th>
                 <th class="mdl-data-table__cell--non-numeric">歌手</th>
                 <th class="mdl-data-table__cell--non-numeric">专辑</th>
                 <th class="mdl-data-table__cell--non-numeric">发行于</th>
-                <th class="mdl-data-table__cell--non-numeric">歌词 (点击查看全部)</th>
+                <th class="mdl-data-table__cell--non-numeric">歌词 (点击查看全文)</th>
 
             </tr>
           </thead>

@@ -33,10 +33,12 @@ namespace Zhaoyang{
 
     class InvertedIndex
     {
+    public:
+        typedef BTree<CharString, KeyWordData > Keywords;
+    private:
         //储存所有歌曲信息。本类中的所有 `SongInfo*` 指针均指向其中。
         List<SongInfo> songs;
         //关键词词典
-        typedef BTree<CharString, KeyWordData > Keywords;
         Keywords keywords;
         //分词器实例
         Segmentation *seg;
@@ -44,11 +46,12 @@ namespace Zhaoyang{
         InvertedIndex(void);
         ~InvertedIndex(void);
         Segmentation* getSeg(){return seg;}
+        Keywords& getKeywords(){return keywords;}
         void insert(SongInfo& song);
         std::vector<WeightedSong> search(CharStringList wordsInQuery);
         std::vector<SongInfo *> recommend(CharString songName); //return[0] is the matching song
         void test();
-
+        
     };
 
     //词典的节点

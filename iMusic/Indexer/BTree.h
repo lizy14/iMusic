@@ -2,7 +2,7 @@
 文件名: BTree.h
 描　述: B-树，模板类，
 　　　  保存 key-value 对，等效于 std::map<>，
-　　　  对外提供 operator[] 和 STL 风格迭代器
+　　　  对外提供 operator[] 和 forEach 
 
 　　　  参考书目：《算法导论》第三版
 
@@ -162,7 +162,7 @@ namespace Zhaoyang{
             //TODO
         }
 
-        void travel(void(*visit)(Pair p)){
+        void forEach(void(*visit)(Pair p)){
             travel_(root, visit);
         }
         ValueType& operator[](KeyType key){

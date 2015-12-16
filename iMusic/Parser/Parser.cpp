@@ -67,7 +67,11 @@ namespace Zhaoyang{
 	Parser::~Parser(){
 		return;
 	}
-
+    CharString removeParentheses(CharString str){
+        str = str.subString(0, str.indexOf('('));
+        str = str.subString(0, str.indexOf(CharString("（")));
+        return str;
+    }
 	SongInfo Parser::getSongInfo(){
 		//遍历所有标签，根据标签名称提取信息
 		//（链表的 operator[] 做了处理，用下标遍历仅耗线性时间）
@@ -76,7 +80,7 @@ namespace Zhaoyang{
 		for(int ↑_↑=0; ↑_↑<length; ↑_↑++){
 			Tag currentTag = allTags[↑_↑];
 			if(currentTag.tagName.indexOf(CharString("h2"))==0){
-				songInfo.title = (innerText(str.subString(currentTag.start, currentTag.end))).trim();
+				songInfo.title = removeParentheses(innerText(str.subString(currentTag.start, currentTag.end))).trim();
 			}
 			if(currentTag.tagName.indexOf(CharString("textarea"))==0){
 				songInfo.lyric = (innerText(str.subString(currentTag.start, currentTag.end))).trim();

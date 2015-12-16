@@ -28,7 +28,16 @@ InvertedIndex *index;
 void queryApiHandler(ostream& os, string& query){
 
     CharStringList wordsInQuery = index->getSeg()->exec(query);
+    CharStringList wordsInQuery_;
     
+    for(int i=0; i<wordsInQuery.length; i++){
+        auto& keywordInfo = index->getKeywords()[wordsInQuery[i]];
+        if(keywordInfo.numberOfAppearances <= 100)//TODO: magic number
+            wordsInQuery_.push(wordsInQuery[i]);
+    }
+    
+
+
     auto result = index->search(wordsInQuery);
     std::vector<SongInfo> result_;
     int maxNumberOfResults = 10; //non-negative integer
@@ -43,7 +52,7 @@ void queryApiHandler(ostream& os, string& query){
     for(auto i: recommandResult){
         recommandResult_.push_back(*(i));
     }
-    string json = "{\"seg\":" + JSON(wordsInQuery) + ",\"result\":" + JSON(result_) + ",\"recommend\":"+ JSON(recommandResult_) + "}";
+    string json = "{\"seg\":" + JSON(wordsInQuery_) + ",\"result\":" + JSON(result_) + ",\"recommend\":"+ JSON(recommandResult_) + "}";
 
     for(char i : json){
         if(i=='\n')
@@ -128,14 +137,24 @@ int main(){
 
     processAllSongs();
 
+    //just for fun
+    /*index->getKeywords().travel([](InvertedIndex::Keywords::Pair p){
+        cout << p.key << ',' << p.value.numberOfAppearances << endl;
+    });*/
+
+
     int func = 1; //function switch
     switch(func){
+    case 0: //GUI, server only (doesn't open browser)
+        puts("Starting web server...");
+        startServer(queryApiHandler, false);
+        break;
     case 1: //GUI
+        puts("Starting web server and your default browser...");
         startServer(queryApiHandler, true);
-      
         break;
     case 2: //keyword search
-        std::cout << "Note: ";
+        puts("reading query1.txt...");
         searchQueryHandler(
 #ifdef DEBUGGING
             std::cin, std::cout);
@@ -145,6 +164,7 @@ int main(){
 #endif
         break;
     case 3: //recommendation
+        puts("reading query2.txt...");
         recommendationQueryHandler(
 #ifdef DEBUGGING
             std::cin, std::cout);

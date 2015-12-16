@@ -109,6 +109,9 @@ std::vector<WeightedSong> InvertedIndex::search(CharStringList wordsInQuery){
 
     for(int i=0; i<wordsInQuery.length; i++){
         auto& keywordInfo = keywords[wordsInQuery[i]];
+        if(keywordInfo.numberOfAppearances > 100) 
+            //TODO: magic number
+            continue;
         auto& listOfDocuments = keywordInfo.list;
         for(int i=0; i<listOfDocuments.length; i++){
             songs[listOfDocuments[i].p] = true;
