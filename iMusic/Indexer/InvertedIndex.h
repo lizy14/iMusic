@@ -44,7 +44,8 @@ namespace Zhaoyang{
         ~InvertedIndex(void);
         Segmentation* getSeg(){return seg;}
         void insert(SongInfo& song);
-        std::vector<SongInfo*> query(CharStringList wordsInQuery);
+        std::vector<WeightedSong> search(CharStringList wordsInQuery);
+        std::vector<SongInfo *> recommend(CharString songName); //return[0] is the matching song
         void test();
 
     };

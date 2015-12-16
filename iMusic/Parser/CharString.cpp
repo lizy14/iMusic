@@ -41,8 +41,10 @@ namespace Zhaoyang{
 	inline char& CharString::operator[](int i) const{
 		if(i<0)
 			i += len;
+#ifdef _DEBUG
 		if(i<0 || i>=len)
 			throw "Subscript out of range";
+#endif
 		return head[i];
 	}
 	void CharString::append(char chr){
@@ -57,7 +59,6 @@ namespace Zhaoyang{
 		}
 		head[len]=chr;
 		len++;
-
 	}
 	inline int CharString::length() const{
 		return this->len;
@@ -150,6 +151,7 @@ namespace Zhaoyang{
 		return str;
 	}
 	CharString& CharString::operator=(const CharString& str){
+		delete[] head;
 		head=nullptr, len=0, capacity=0;
 		int oldLength = str.length();
 		for(int i=0; i<oldLength; i++){

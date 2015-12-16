@@ -18,7 +18,6 @@
 #include <stack>
 
 namespace Zhaoyang{
-    
     template<class KeyType, class ValueType>
     class BTree{
         static const int t = 2; //minimum degree, >= 2
@@ -37,7 +36,6 @@ namespace Zhaoyang{
             bool isLeaf;
 
             void makeNonLeaf(bool __ = true){
-                
                 if(children.size() == 0){
                     data.resize(2*t-1);
                     children.resize(2*t);
@@ -90,7 +88,6 @@ namespace Zhaoyang{
                 return SearchResult(false, x, i-1);
 
             return search(x->children[i-1], k);
-
         }
 
         /*
@@ -115,7 +112,7 @@ namespace Zhaoyang{
             for(int j=x->n + 1; j>=i + 1; j--)
                 x->children[j+1 -1] = x->children[j -1];
             x->children[i] = z;
-            
+
             for(int j=x->n; j>=i; j--)
                 x->data[j+1 -1] = x->data[j-1];
             x->data[i-1] = y->data[t-1];
@@ -142,14 +139,12 @@ namespace Zhaoyang{
                         i++;
                 }
                 insert_nonfull(x->children[i-1], k, v);
-
             }
         }
 
         void insert(KeyType& k, ValueType& v){
             auto r = root;
             if(r->n == 2*t-1){
-
                 auto s = new Node(false);
                 root = s;
                 s->children[1-1] = r;
@@ -171,7 +166,6 @@ namespace Zhaoyang{
             travel_(root, visit);
         }
         ValueType& operator[](KeyType key){
-
             auto find = search(root, key);
             if(find.success)
                 return find.node->data[find.index].value;
