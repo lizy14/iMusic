@@ -43,7 +43,7 @@ void queryApiHandler(ostream& os, string& query){
     for(auto i: recommandResult){
         recommandResult_.push_back(*(i));
     }
-    string json = "{\"seg\":" + JSON(wordsInQuery) + ",\"result\":" + JSON(result_) + ",\"recommand\":"+ JSON(recommandResult_) + "}";
+    string json = "{\"seg\":" + JSON(wordsInQuery) + ",\"result\":" + JSON(result_) + ",\"recommend\":"+ JSON(recommandResult_) + "}";
 
     for(char i : json){
         if(i=='\n')

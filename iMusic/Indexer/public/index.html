@@ -65,9 +65,12 @@ function render_result(data){
         );
         return str;
     }
-    
+    var flag = false;
     data.recommend.forEach(function(item){
-
+        if(!flag){
+            flag = true;
+            return;
+        }
         item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
         
         var html='';

@@ -36,7 +36,8 @@ namespace Zhaoyang{
         //储存所有歌曲信息。本类中的所有 `SongInfo*` 指针均指向其中。
         List<SongInfo> songs;
         //关键词词典
-        BTree<CharString, KeyWordData > keywords;
+        typedef BTree<CharString, KeyWordData > Keywords;
+        Keywords keywords;
         //分词器实例
         Segmentation *seg;
     public:
