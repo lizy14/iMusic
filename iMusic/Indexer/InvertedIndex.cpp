@@ -87,7 +87,7 @@ std::vector<SongInfo*> InvertedIndex::recommend(CharString name){
         return ret;
 
 
-    cout << "Generating recommendations for `" << songs[minID].title << "`\n...";
+    cout << "Generating recommendations for `" << songs[minID].title << "`...\n";
 
     auto& song = songs[minID];
     ret.push_back(&song);
