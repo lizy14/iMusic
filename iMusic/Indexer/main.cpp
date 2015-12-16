@@ -7,7 +7,7 @@
 
 环　境: Visual Studio 2012 (MSVC++ 11.0)
 */
-#define DEBUGGING
+//#define DEBUGGING
 #include "WebServer.h"
 #include "../Parser/IO.h"
 #include "JSON.h"
@@ -70,10 +70,10 @@ inline CharString getIdByFilename(CharString s){
 }
 void searchQueryHandler(istream& is, ostream& os){
     while(1){
+        if(is.eof())
+            break;
         string query;
         getline(is, query);
-        if(!is.good())
-            break;
         CharStringList wordsInQuery = index->getSeg()->exec(query);
         auto result = index->search(wordsInQuery);
 
@@ -86,24 +86,25 @@ void searchQueryHandler(istream& is, ostream& os){
 
 void recommendationQueryHandler(istream& is, ostream& os){
     while(1){
+        if(is.eof())
+            break;
         string _;
         getline(is, _);
-        if(!is.good())
-            break;
         CharString query(_);
         
         auto result = index->recommend(query);
 
         if(result.size()==0)
-            os << "Song with title `" << _ << "` not found.\n";
+            os << "Song with specified title not found.";
         else{
             bool flag = false; //special handling for the first item in result
             for(auto& i: result)
                 if(flag)
                     os << '(' << getIdByFilename(i->origin) << ',' << i->title << ')' << ',';
                 else
-                    flag = true, os << "Showing results for `" << i->title << "`:\n";
+                    flag = true;
         }
+        os << '\n';
     }
 }
 
@@ -143,7 +144,7 @@ int main(){
     });*/
 
 
-    int func = 1; //function switch
+    int func = 2; //function switch
     switch(func){
     case 0: //GUI, server only (doesn't open browser)
         puts("Starting web server...");
@@ -169,8 +170,8 @@ int main(){
 #ifdef DEBUGGING
             std::cin, std::cout);
 #else
-            ifstream("query1.txt"), 
-            ofstream("result1.txt"));
+            ifstream("query2.txt"), 
+            ofstream("result2.txt"));
 #endif
         break;
     }
