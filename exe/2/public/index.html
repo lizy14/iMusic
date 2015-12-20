@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>iMusic</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+<link rel="stylesheet" href="material.min.css">
+<script src="material.min.js"></script>
+<script src="jquery.min.js" type="text/javascript"></script>
+<script>
+
+$.ajaxSetup({
+    processData: false
+});
+function exec_query_(kw){
+    $('#textbox').val(kw);
+    var url = 'http://localhost:2333/api?query='+kw;
+    $('#progress').show();
+    $('#errormsg').html("");
+    $.getJSON(url, function(data){
+        console.log(data);
+        $('#progress').hide();
+        render_result(data);
+    })
+    .error(function(){
+        $('#errormsg').html("查询失败。");
+        $('#progress').hide();
+    });
+}
+function exec_query(){
+    var kw = $('#textbox').val();
+    if(!kw) return;
+    exec_query_(kw);
+}
+function render_result(data){
+    data.seg.sort(function(a, b){
+        if(a.length < b.length)
+            return 1;
+        if(a.length > b.length)
+            return -1;
+        return (a<b? 1: (a>b? -1: 0));
+    })
+    $('#tblData').html('');
+    $('#tblData').hide();
+    function highlightAndAddLink(str){
+        return '<a onclick="exec_query_(\''+ str + '\')">'+highlight(str)+'</a>';
+    }
+    function addLink(str){
+        return '<a onclick="exec_query_(\''+ str + '\')">'+(str)+'</a>';
+    }
+    function highlight(str){
+        data.seg.forEach(function(word){
+            str = str.replace(new RegExp(word,"g"), '<b>'+word+'</b>');
+        });
+        console.log(str);
+        return str;
+    }
+    function highlightLyric(str){
+        return abst(highlight(unescapeLyric(str)));
+    }
+    function unescapeLyric(str){
+        return str.replace(/\\n/g, ' ');
+    }
+    function abst(str){
+        var reg;
+        reg = /<\/b>([^<.]*?) ([^<.]{3,}) ([^<.]*?)<b>/;
+        while(str.match(reg)){
+            str = str.replace(reg, function(match,p1,p2,p3){
+                return '</b>'+p1 + '...' + p3 + '<b>'}
+            );
+        }
+        str = str.replace(/^([^<.]{3,}) ([^<.]*?)<b>/, function(match,p1,p2){
+            return p2 + '<b>'}
+        );
+
+        str = str.replace(/<\/b>([^<.]*?) ([^<.]{3,})/, function(match,p1,p2){
+            return '</b>' + p1}
+        );
+        return str;
+    }
+    var flag = false;
+    
+    if(data.recommend && $('#textbox').val().length > (data.recommend[0].title.length/2)){
+        $('#tblData').append('<tr class="recomm"><td colspan="5" class="mdl-data-table__cell--non-numeric">以下是歌曲《<a><b>'+data.recommend[0].title + '</b></a>》的推荐列表：</td></tr>');
+    
+        data.recommend.forEach(function(item){
+            if(!flag){
+                flag = true;
+                return;
+            }
+            item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
+            
+            var html='';
+            html += '<tr class="recomm">';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+(addLink(item.title))+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+unescapeLyric(item.lyric)+'</span>'+'</td>';
+            
+            html += '</tr>';
+            $('#tblData').append(html);                
+        });
+    }
+    
+    if(data.result){
+        $('#tblData').append('<tr><td colspan="5" class="mdl-data-table__cell--non-numeric">以下是关键词 '+data.seg.map(function(i){return '<a><b>'+i+'</b></a>'}).join('、') + ' 的检索结果：</td></tr>');
+    
+        data.result.forEach(function(item){
+
+            item.lyric = (item.lyric).replace(/[\n ]/g,'\\n')
+            
+            var html='';
+            html += '<tr>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+(highlightAndAddLink(item.title))+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.singer+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.album+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+item.pubDate+'</td>';
+            html += '<td class="mdl-data-table__cell--non-numeric">'+'<span onclick=alert("'+item.lyric+'");>'+highlightLyric(item.lyric)+'</span>'+'</td>';
+            
+            html += '</tr>';
+            $('#tblData').append(html);                
+        });
+    }
+
+    $('#tblData').fadeIn();
+}
+function onkeydown_(event){
+    if(event.keyCode == 13)
+        exec_query();
+    return true;
+}
+</script>
+<style>
+b{
+     rgb(202, 53, 181);
+}
+.container{
+    padding: 20px;
+    max-width: 100%;
+    
+}
+table{
+    width:100%;
+    max-width:100%;
+    /*table-layout: fixed;*/
+}
+td{
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+}
+span#errormsg{
+    margin-left: 2em;
+}
+#progress{
+    width:100%;
+}
+
+#result{
+    max-width:100%;
+    overflow: hidden;
+}
+.prograss-container{
+    height:4px;
+    background-image: -webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,rgb(156,39,176),rgb(156,39,176));
+    background-image: linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,rgb(156,39,176),rgb(156,39,176)); 
+}
+tr.recomm{
+    background-color: rgb(246, 232, 249);
+}
+</style>
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+
+        <label class="mdl-textfield__label" for="user-note">请输入关键字或歌曲名：</label>
+        <input class="mdl-textfield__input" id="textbox" type="text" onkeydown="return onkeydown_(event);"></input>
+    </div>
+         
+            
+            
+    <span class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="button" onclick="exec_query();">查询</span>
+    <span id="errormsg"></span>
+    <div class="prograss-container">
+        <div id="progress" class="mdl-progress mdl-js-progress mdl-progress__indeterminate" style="display:none;"></div>
+    </div>
+
+    
+    
+    <div id="result">
+    
+    
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">歌名 (点击查看推荐)</th>
+                <th class="mdl-data-table__cell--non-numeric">歌手</th>
+                <th class="mdl-data-table__cell--non-numeric">专辑</th>
+                <th class="mdl-data-table__cell--non-numeric">发行于</th>
+                <th class="mdl-data-table__cell--non-numeric">歌词 (点击查看全文)</th>
+
+            </tr>
+          </thead>
+          <tbody id="tblData">
+          </tbody>
+        </table>
+    
+    </div>
+
+</div> 
+
+</body>
+</html>
